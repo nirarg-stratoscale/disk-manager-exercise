@@ -1,0 +1,107 @@
+swagger: '2.0'
+info:
+  description: This is a service to get physical disk information.
+  version: 1.0.0
+  title: Disk Manager Exercise
+host: diskmanagerexercise.service.strato
+basePath: /api/v2
+tags:
+  - name: disk
+    description: Information about physical disks
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /disks:
+    get:
+      tags:
+        - disk
+      summary: List physical disks
+      operationId: listDisks
+      parameters:
+        - name: hostname
+          in: query
+          description: The hostname of the specified node
+          required: false
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Disk'
+        '400':
+          description: Invalid filter
+      security:
+        - roles:
+            - admin
+            - member
+  /disks/{disk_id}:
+      get:
+        tags:
+          - disk
+        summary: Retrieve a physical disk
+        operationId: diskById
+        parameters:
+          - name: disk_id
+            in: path
+            description: The ID of the requested disk
+            required: true
+            type: string
+        responses:
+          '200':
+            description: successful operation
+            schema:
+              $ref: '#/definitions/Disk'
+          '400':
+            description: Invalid disk ID
+          '404':
+            description: Disk not found
+        security:
+          - roles:
+              - admin
+              - member
+
+definitions:
+  Disk:
+    type: object
+    required:
+      - id
+      - path
+    properties:
+      id:
+        type: integer
+        format: int64
+      path:
+        type: string
+        example: '/dev/sda'
+      serial:
+        type: string
+        example: '17501B8989A8'
+      mediaType:
+        type: string
+        enum: ['SSD', 'HDD', 'NVMe']
+      model:
+        type: string
+        example: 'Micron_5200_MTFDDAK480TDC'
+      freeCapacityMB:
+        type: integer
+        format: int64
+      totalCapacityMB:
+        type: integer
+        format: int64
+      createdAt:
+        type: string
+        example: '2018-05-02T07:07:38.718575'
+      updatedAt:
+        type: string
+        example: '2018-05-02T07:07:38.800429'
+      hostname:
+        type: string
+        example: 'stratonode2.node.strato'
+        x-go-custom-tag: gorm:"primary_key" query:"filter,sort"
