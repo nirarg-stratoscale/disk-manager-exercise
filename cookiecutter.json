@@ -1,0 +1,18 @@
+{
+  "_template": "https://github.com/Stratoscale/go-template", 
+  "base_path": "/api/v2", 
+  "debug_port": "81", 
+  "go_client": "diskmanagerexerciseclient", 
+  "go_package": "github.com/Stratoscale/disk-manager-exercise", 
+  "host": "diskmanagerexercise.service.strato", 
+  "name": "disk-manager-exercise", 
+  "port": "80", 
+  "python_client": "disk-manager-exercise-client", 
+  "python_client_package": "disk_manager_exercise_client", 
+  "repo_name": "disk-manager-exercise", 
+  "scheme": "http", 
+  "service_group": "API Services", 
+  "service_group_name_for_api_docs": "ALARM", 
+  "swagger_path": "/home/nargaman/work/go/src/github.com/Stratoscale/swagger-templates/disk-manager-exercise-swagger.yaml", 
+  "use_database": "True"
+}

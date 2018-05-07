@@ -1,0 +1,12 @@
+registry: rackattack-nas.dc1:5000
+build-container-image: disk-manager-exercise-build
+workdir: /go/src/github.com/Stratoscale/disk-manager-exercise
+volumes:
+  - ${PWD}:/go/src/github.com/Stratoscale/disk-manager-exercise:rw,Z
+  - /tmp:/tmp:rw
+  - ${HOME}/.netrc:/root/.netrc
+  - ${HOME}/.gocache:/tmp/.gocache
+env:
+  HOST_PWD: ${PWD}
+  HOST_GOPATH: ${GOPATH}
+  GOCACHE: /tmp/.gocache

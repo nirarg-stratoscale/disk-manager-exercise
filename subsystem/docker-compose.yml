@@ -1,0 +1,62 @@
+version: '3'
+
+networks:
+  tests:
+    driver: bridge
+
+services:
+
+  diskmanagerexercise.service.strato:
+    build:
+      context: ..
+      dockerfile: Dockerfile.disk-manager-exercise
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:80/health
+      interval: 1s
+    environment:
+      LISTEN_ADDR: :80
+      PPROF_ADDR: :81
+      LOG_HUMAN: 'true'
+      LOG_LEVEL: DEBUG
+      CONSUL_ADDR: consul:8500
+      DB_ROOT_CONN_STRING: root:hello@tcp(mysql:3306)/
+      DB_NAME: disk_manager_exercise
+      DB_DEBUG: 'true'
+    networks: [tests]
+    ports:
+     - "80:80"
+    links:
+     - mysql
+     - consul
+     - events-agent
+    depends_on:
+     - mysql
+     - consul
+     - events-agent
+
+  mysql:
+    image: mariadb:10.1.26
+    networks: [tests]
+    healthcheck:
+      test: mysql -uroot -phello -e 'show databases'
+      interval: 1s
+    environment:
+     - MYSQL_ROOT_PASSWORD=hello
+
+  consul:
+    image: consul
+    networks: [tests]
+    healthcheck:
+      test: curl -f http://localhost:8500
+      interval: 1s
+
+  events-agent:
+    image: stratoscale/wiremock:latest
+    command: "7086"
+    healthcheck:
+      test: curl -f http://localhost:7086/api/v2/health
+      interval: 1s
+    networks: [tests]
+    volumes:
+    - ${HOST_PWD}/subsystem/wiremock/events:/mappings:ro

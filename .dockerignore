@@ -1,0 +1,6 @@
+# Exclude vendor directory (it will be mounted as a volume)
+vendor/*
+
+# Exclude some build directories
+build/subsystem/*
+build/disk-manager-exercise-client/*

@@ -1,0 +1,11 @@
+version: 2
+services:
+  disk-manager-exercise:
+    image_name:  disk-manager-exercise
+    containerized: true
+    rpms:
+      - build/rpmbuild/RPMS/x86_64/disk-manager-exercise-deploy-*rpm
+    pips:
+      - build/disk-manager-exercise-client/dist/disk-manager-exercise-client-*.tar.gz
+rpms_dir: build/rpmbuild/RPMS/x86_64
+

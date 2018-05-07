@@ -1,0 +1,15 @@
+[Unit]
+Description=disk-manager-exercise Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker-service-stop.sh disk-manager-exercise.yml
+ExecStartPre=-/usr/bin/docker  rm -f disk-manager-exercise.service.strato
+ExecStart=/usr/bin/docker-service-start.sh disk-manager-exercise.yml disk-manager-exercise.log
+ExecStop=/usr/bin/docker-service-stop.sh disk-manager-exercise.yml
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

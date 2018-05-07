@@ -1,0 +1,18 @@
+---
+
+disk-manager-exercise:
+  image: rackattack-nas.dc1:5000/staging/disk-manager-exercise:latest
+  container_name: disk-manager-exercise.service.strato
+  volumes:
+    - /var/log/stratoscale:/var/log/stratoscale:rw,Z
+    - /etc/stratoscale/:/etc/stratoscale/:ro
+    - /etc/localtime:/etc/localtime:ro
+  net: "host"
+  environment:
+    LISTEN_ADDR: :80
+    PPROF_ADDR: :81
+    LOG_FILE: /var/log/stratoscale/disk-manager-exercise.log
+    LOG_LEVEL: INFO
+    CONSUL_ADDR: 127.0.0.1:8500
+    DB_ROOT_CONN_STRING: root:hello@tcp(master.mysql.service.strato:3306)/
+    DB_NAME: disk_manager_exercise

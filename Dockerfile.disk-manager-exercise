@@ -1,0 +1,5 @@
+FROM rackattack-nas.dc1:5000/go-base:74cc7a7f449b340003ebc92b4c5887a678a60a8a
+
+ADD build/disk-manager-exercise /usr/bin/disk-manager-exercise
+
+ENTRYPOINT ["disk-manager-exercise"]
