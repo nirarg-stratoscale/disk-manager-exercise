@@ -66,7 +66,28 @@ func init() {
             }
           },
           "400": {
-            "description": "Invalid filter"
+            "description": "Invalid parameters",
+            "schema": {
+              "$ref": "#/definitions/error400"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/error401"
+            }
+          },
+          "403": {
+            "description": "No permissions",
+            "schema": {
+              "$ref": "#/definitions/error403"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/error500"
+            }
           }
         }
       }
@@ -103,10 +124,34 @@ func init() {
             }
           },
           "400": {
-            "description": "Invalid disk ID"
+            "description": "Invalid parameters",
+            "schema": {
+              "$ref": "#/definitions/error400"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/error401"
+            }
+          },
+          "403": {
+            "description": "No permissions",
+            "schema": {
+              "$ref": "#/definitions/error403"
+            }
           },
           "404": {
-            "description": "Disk not found"
+            "description": "Unknown volume",
+            "schema": {
+              "$ref": "#/definitions/error404"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/error500"
+            }
           }
         }
       }
@@ -166,6 +211,31 @@ func init() {
           "example": "2018-05-02T07:07:38.800429"
         }
       }
+    },
+    "error400": {
+      "description": "400 return code message",
+      "type": "string",
+      "pattern": "^Request not processed due to invalid query parameters$"
+    },
+    "error401": {
+      "description": "401 return code message",
+      "type": "string",
+      "pattern": "^Unauthorized; Access is denied due to invalid credentials$"
+    },
+    "error403": {
+      "description": "403 return code message",
+      "type": "string",
+      "pattern": "^Unauthorized; Access is denied due to lack of permissions$"
+    },
+    "error404": {
+      "description": "404 return code message",
+      "type": "string",
+      "pattern": "^The specified resource could not be found$"
+    },
+    "error500": {
+      "description": "500 return code message",
+      "type": "string",
+      "pattern": "^An internal error has occurred$"
     }
   },
   "tags": [

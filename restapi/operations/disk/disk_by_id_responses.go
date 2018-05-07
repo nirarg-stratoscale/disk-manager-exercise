@@ -59,11 +59,16 @@ func (o *DiskByIDOK) WriteResponse(rw http.ResponseWriter, producer runtime.Prod
 // DiskByIDBadRequestCode is the HTTP code returned for type DiskByIDBadRequest
 const DiskByIDBadRequestCode int = 400
 
-/*DiskByIDBadRequest Invalid disk ID
+/*DiskByIDBadRequest Invalid parameters
 
 swagger:response diskByIdBadRequest
 */
 type DiskByIDBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error400 `json:"body,omitempty"`
 }
 
 // NewDiskByIDBadRequest creates DiskByIDBadRequest with default headers values
@@ -71,22 +76,125 @@ func NewDiskByIDBadRequest() *DiskByIDBadRequest {
 	return &DiskByIDBadRequest{}
 }
 
+// WithPayload adds the payload to the disk by Id bad request response
+func (o *DiskByIDBadRequest) WithPayload(payload models.Error400) *DiskByIDBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the disk by Id bad request response
+func (o *DiskByIDBadRequest) SetPayload(payload models.Error400) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *DiskByIDBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(400)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
+}
+
+// DiskByIDUnauthorizedCode is the HTTP code returned for type DiskByIDUnauthorized
+const DiskByIDUnauthorizedCode int = 401
+
+/*DiskByIDUnauthorized Invalid credentials
+
+swagger:response diskByIdUnauthorized
+*/
+type DiskByIDUnauthorized struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error401 `json:"body,omitempty"`
+}
+
+// NewDiskByIDUnauthorized creates DiskByIDUnauthorized with default headers values
+func NewDiskByIDUnauthorized() *DiskByIDUnauthorized {
+	return &DiskByIDUnauthorized{}
+}
+
+// WithPayload adds the payload to the disk by Id unauthorized response
+func (o *DiskByIDUnauthorized) WithPayload(payload models.Error401) *DiskByIDUnauthorized {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the disk by Id unauthorized response
+func (o *DiskByIDUnauthorized) SetPayload(payload models.Error401) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DiskByIDUnauthorized) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(401)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
+}
+
+// DiskByIDForbiddenCode is the HTTP code returned for type DiskByIDForbidden
+const DiskByIDForbiddenCode int = 403
+
+/*DiskByIDForbidden No permissions
+
+swagger:response diskByIdForbidden
+*/
+type DiskByIDForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error403 `json:"body,omitempty"`
+}
+
+// NewDiskByIDForbidden creates DiskByIDForbidden with default headers values
+func NewDiskByIDForbidden() *DiskByIDForbidden {
+	return &DiskByIDForbidden{}
+}
+
+// WithPayload adds the payload to the disk by Id forbidden response
+func (o *DiskByIDForbidden) WithPayload(payload models.Error403) *DiskByIDForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the disk by Id forbidden response
+func (o *DiskByIDForbidden) SetPayload(payload models.Error403) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DiskByIDForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 // DiskByIDNotFoundCode is the HTTP code returned for type DiskByIDNotFound
 const DiskByIDNotFoundCode int = 404
 
-/*DiskByIDNotFound Disk not found
+/*DiskByIDNotFound Unknown volume
 
 swagger:response diskByIdNotFound
 */
 type DiskByIDNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error404 `json:"body,omitempty"`
 }
 
 // NewDiskByIDNotFound creates DiskByIDNotFound with default headers values
@@ -94,10 +202,66 @@ func NewDiskByIDNotFound() *DiskByIDNotFound {
 	return &DiskByIDNotFound{}
 }
 
+// WithPayload adds the payload to the disk by Id not found response
+func (o *DiskByIDNotFound) WithPayload(payload models.Error404) *DiskByIDNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the disk by Id not found response
+func (o *DiskByIDNotFound) SetPayload(payload models.Error404) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *DiskByIDNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(404)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
+}
+
+// DiskByIDInternalServerErrorCode is the HTTP code returned for type DiskByIDInternalServerError
+const DiskByIDInternalServerErrorCode int = 500
+
+/*DiskByIDInternalServerError Internal Error
+
+swagger:response diskByIdInternalServerError
+*/
+type DiskByIDInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error500 `json:"body,omitempty"`
+}
+
+// NewDiskByIDInternalServerError creates DiskByIDInternalServerError with default headers values
+func NewDiskByIDInternalServerError() *DiskByIDInternalServerError {
+	return &DiskByIDInternalServerError{}
+}
+
+// WithPayload adds the payload to the disk by Id internal server error response
+func (o *DiskByIDInternalServerError) WithPayload(payload models.Error500) *DiskByIDInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the disk by Id internal server error response
+func (o *DiskByIDInternalServerError) SetPayload(payload models.Error500) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DiskByIDInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(500)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }

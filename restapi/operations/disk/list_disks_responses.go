@@ -62,11 +62,16 @@ func (o *ListDisksOK) WriteResponse(rw http.ResponseWriter, producer runtime.Pro
 // ListDisksBadRequestCode is the HTTP code returned for type ListDisksBadRequest
 const ListDisksBadRequestCode int = 400
 
-/*ListDisksBadRequest Invalid filter
+/*ListDisksBadRequest Invalid parameters
 
 swagger:response listDisksBadRequest
 */
 type ListDisksBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error400 `json:"body,omitempty"`
 }
 
 // NewListDisksBadRequest creates ListDisksBadRequest with default headers values
@@ -74,10 +79,150 @@ func NewListDisksBadRequest() *ListDisksBadRequest {
 	return &ListDisksBadRequest{}
 }
 
+// WithPayload adds the payload to the list disks bad request response
+func (o *ListDisksBadRequest) WithPayload(payload models.Error400) *ListDisksBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the list disks bad request response
+func (o *ListDisksBadRequest) SetPayload(payload models.Error400) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *ListDisksBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(400)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
+}
+
+// ListDisksUnauthorizedCode is the HTTP code returned for type ListDisksUnauthorized
+const ListDisksUnauthorizedCode int = 401
+
+/*ListDisksUnauthorized Invalid credentials
+
+swagger:response listDisksUnauthorized
+*/
+type ListDisksUnauthorized struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error401 `json:"body,omitempty"`
+}
+
+// NewListDisksUnauthorized creates ListDisksUnauthorized with default headers values
+func NewListDisksUnauthorized() *ListDisksUnauthorized {
+	return &ListDisksUnauthorized{}
+}
+
+// WithPayload adds the payload to the list disks unauthorized response
+func (o *ListDisksUnauthorized) WithPayload(payload models.Error401) *ListDisksUnauthorized {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the list disks unauthorized response
+func (o *ListDisksUnauthorized) SetPayload(payload models.Error401) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ListDisksUnauthorized) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(401)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
+}
+
+// ListDisksForbiddenCode is the HTTP code returned for type ListDisksForbidden
+const ListDisksForbiddenCode int = 403
+
+/*ListDisksForbidden No permissions
+
+swagger:response listDisksForbidden
+*/
+type ListDisksForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error403 `json:"body,omitempty"`
+}
+
+// NewListDisksForbidden creates ListDisksForbidden with default headers values
+func NewListDisksForbidden() *ListDisksForbidden {
+	return &ListDisksForbidden{}
+}
+
+// WithPayload adds the payload to the list disks forbidden response
+func (o *ListDisksForbidden) WithPayload(payload models.Error403) *ListDisksForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the list disks forbidden response
+func (o *ListDisksForbidden) SetPayload(payload models.Error403) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ListDisksForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
+}
+
+// ListDisksInternalServerErrorCode is the HTTP code returned for type ListDisksInternalServerError
+const ListDisksInternalServerErrorCode int = 500
+
+/*ListDisksInternalServerError Internal Error
+
+swagger:response listDisksInternalServerError
+*/
+type ListDisksInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Error500 `json:"body,omitempty"`
+}
+
+// NewListDisksInternalServerError creates ListDisksInternalServerError with default headers values
+func NewListDisksInternalServerError() *ListDisksInternalServerError {
+	return &ListDisksInternalServerError{}
+}
+
+// WithPayload adds the payload to the list disks internal server error response
+func (o *ListDisksInternalServerError) WithPayload(payload models.Error500) *ListDisksInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the list disks internal server error response
+func (o *ListDisksInternalServerError) SetPayload(payload models.Error500) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ListDisksInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(500)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }

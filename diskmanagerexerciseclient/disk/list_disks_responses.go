@@ -39,6 +39,27 @@ func (o *ListDisksReader) ReadResponse(response runtime.ClientResponse, consumer
 		}
 		return nil, result
 
+	case 401:
+		result := NewListDisksUnauthorized()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
+	case 403:
+		result := NewListDisksForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
+	case 500:
+		result := NewListDisksInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
 	default:
 		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
@@ -78,16 +99,103 @@ func NewListDisksBadRequest() *ListDisksBadRequest {
 
 /*ListDisksBadRequest handles this case with default header values.
 
-Invalid filter
+Invalid parameters
 */
 type ListDisksBadRequest struct {
+	Payload models.Error400
 }
 
 func (o *ListDisksBadRequest) Error() string {
-	return fmt.Sprintf("[GET /disks][%d] listDisksBadRequest ", 400)
+	return fmt.Sprintf("[GET /disks][%d] listDisksBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *ListDisksBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewListDisksUnauthorized creates a ListDisksUnauthorized with default headers values
+func NewListDisksUnauthorized() *ListDisksUnauthorized {
+	return &ListDisksUnauthorized{}
+}
+
+/*ListDisksUnauthorized handles this case with default header values.
+
+Invalid credentials
+*/
+type ListDisksUnauthorized struct {
+	Payload models.Error401
+}
+
+func (o *ListDisksUnauthorized) Error() string {
+	return fmt.Sprintf("[GET /disks][%d] listDisksUnauthorized  %+v", 401, o.Payload)
+}
+
+func (o *ListDisksUnauthorized) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewListDisksForbidden creates a ListDisksForbidden with default headers values
+func NewListDisksForbidden() *ListDisksForbidden {
+	return &ListDisksForbidden{}
+}
+
+/*ListDisksForbidden handles this case with default header values.
+
+No permissions
+*/
+type ListDisksForbidden struct {
+	Payload models.Error403
+}
+
+func (o *ListDisksForbidden) Error() string {
+	return fmt.Sprintf("[GET /disks][%d] listDisksForbidden  %+v", 403, o.Payload)
+}
+
+func (o *ListDisksForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewListDisksInternalServerError creates a ListDisksInternalServerError with default headers values
+func NewListDisksInternalServerError() *ListDisksInternalServerError {
+	return &ListDisksInternalServerError{}
+}
+
+/*ListDisksInternalServerError handles this case with default header values.
+
+Internal Error
+*/
+type ListDisksInternalServerError struct {
+	Payload models.Error500
+}
+
+func (o *ListDisksInternalServerError) Error() string {
+	return fmt.Sprintf("[GET /disks][%d] listDisksInternalServerError  %+v", 500, o.Payload)
+}
+
+func (o *ListDisksInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

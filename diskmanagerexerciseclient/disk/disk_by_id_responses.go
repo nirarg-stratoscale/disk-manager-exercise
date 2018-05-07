@@ -39,8 +39,29 @@ func (o *DiskByIDReader) ReadResponse(response runtime.ClientResponse, consumer 
 		}
 		return nil, result
 
+	case 401:
+		result := NewDiskByIDUnauthorized()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
+	case 403:
+		result := NewDiskByIDForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
 	case 404:
 		result := NewDiskByIDNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
+	case 500:
+		result := NewDiskByIDInternalServerError()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -87,16 +108,76 @@ func NewDiskByIDBadRequest() *DiskByIDBadRequest {
 
 /*DiskByIDBadRequest handles this case with default header values.
 
-Invalid disk ID
+Invalid parameters
 */
 type DiskByIDBadRequest struct {
+	Payload models.Error400
 }
 
 func (o *DiskByIDBadRequest) Error() string {
-	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdBadRequest ", 400)
+	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *DiskByIDBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewDiskByIDUnauthorized creates a DiskByIDUnauthorized with default headers values
+func NewDiskByIDUnauthorized() *DiskByIDUnauthorized {
+	return &DiskByIDUnauthorized{}
+}
+
+/*DiskByIDUnauthorized handles this case with default header values.
+
+Invalid credentials
+*/
+type DiskByIDUnauthorized struct {
+	Payload models.Error401
+}
+
+func (o *DiskByIDUnauthorized) Error() string {
+	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdUnauthorized  %+v", 401, o.Payload)
+}
+
+func (o *DiskByIDUnauthorized) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewDiskByIDForbidden creates a DiskByIDForbidden with default headers values
+func NewDiskByIDForbidden() *DiskByIDForbidden {
+	return &DiskByIDForbidden{}
+}
+
+/*DiskByIDForbidden handles this case with default header values.
+
+No permissions
+*/
+type DiskByIDForbidden struct {
+	Payload models.Error403
+}
+
+func (o *DiskByIDForbidden) Error() string {
+	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdForbidden  %+v", 403, o.Payload)
+}
+
+func (o *DiskByIDForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -108,16 +189,49 @@ func NewDiskByIDNotFound() *DiskByIDNotFound {
 
 /*DiskByIDNotFound handles this case with default header values.
 
-Disk not found
+Unknown volume
 */
 type DiskByIDNotFound struct {
+	Payload models.Error404
 }
 
 func (o *DiskByIDNotFound) Error() string {
-	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdNotFound ", 404)
+	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *DiskByIDNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewDiskByIDInternalServerError creates a DiskByIDInternalServerError with default headers values
+func NewDiskByIDInternalServerError() *DiskByIDInternalServerError {
+	return &DiskByIDInternalServerError{}
+}
+
+/*DiskByIDInternalServerError handles this case with default header values.
+
+Internal Error
+*/
+type DiskByIDInternalServerError struct {
+	Payload models.Error500
+}
+
+func (o *DiskByIDInternalServerError) Error() string {
+	return fmt.Sprintf("[GET /disks/{disk_id}][%d] diskByIdInternalServerError  %+v", 500, o.Payload)
+}
+
+func (o *DiskByIDInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
