@@ -34,6 +34,6 @@ func (m *manager) ListDisks(ctx context.Context, params disk.ListDisksParams) mi
 	return httputil.NewError(http.StatusNotImplemented, "ListDisks not implemented yet")
 }
 
-func (m *manager) DiskById(ctx context.Context, params disk.DiskByIdParams) middleware.Responder {
+func (m *manager) DiskByID(ctx context.Context, params disk.DiskByIDParams) middleware.Responder {
 	return httputil.NewError(http.StatusNotImplemented, "DiskById not implemented yet")
 }

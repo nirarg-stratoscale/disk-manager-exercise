@@ -52,7 +52,7 @@ func TestHTTPHandler(t *testing.T) {
 
 			h, err := restapi.Handler(restapi.Config{
 				DiskAPI:        &diskMock,
-				AuthMiddleware: middleware.Policy,
+				InnerMiddleware: middleware.Policy,
 				Logger:         log.Debugf,
 			})
 			require.Nil(t, err)

@@ -52,7 +52,7 @@ func TestDiskById(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		params disk.DiskByIdParams
+		params disk.DiskByIDParams
 		want   middleware.Responder
 	}{
 		{
@@ -74,7 +74,7 @@ func TestDiskById(t *testing.T) {
 
 			testutil.SyncAutoMigrate(t, p.AutoMigrate)
 
-			got := p.DiskById(context.Background(), tt.params)
+			got := p.DiskByID(context.Background(), tt.params)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -63,7 +63,7 @@ func main() {
 	h, err := restapi.Handler(restapi.Config{
 		DiskAPI:        disk,
 		Logger:         a.Log.WithField("pkg", "restapi").Debugf,
-		AuthMiddleware: middleware.Policy,
+		InnerMiddleware: middleware.Policy,
 	})
 	a.FailOnError(err, "initializing handler")
 
