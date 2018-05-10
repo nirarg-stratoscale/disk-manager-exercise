@@ -1,13 +1,12 @@
 #!/usr/bin/python
 import unittest
+import mock as mock
 import pytools.storage
 
-import mock as mock
 
+class TestStorage(unittest.TestCase):
 
-class test_storage(unittest.TestCase):
-
-    @mock.patch('subprocess32.check_output')
+    @mock.patch('subprocess.check_output')
     def test_get_storage_list(self, check_output):
         # Test one result, one SSD disk
         check_output.return_value = '''
@@ -17,8 +16,9 @@ class test_storage(unittest.TestCase):
                                        ]
                                     }
                                     '''
-        expected = {'disks': [{'mediaType': 'SSD', 'path': u'/dev/sda', 'serial': u'S35NNY0HA05094', 'totalCapacityMB': 512110, 'model': u'SAMSUNG MZ7TN512'}]}
-        self.assertEquals(pytools.storage.get_storage_list(), expected)
+        expected = {'disks': [{'mediaType': 'SSD', 'path': u'/dev/sda', 'serial': u'S35NNY0HA05094',
+                               'totalCapacityMB': 512110, 'model': u'SAMSUNG MZ7TN512'}]}
+        self.assertEqual(pytools.storage.get_storage_list(), expected)
 
         # Test one result, one HDD disk
         check_output.return_value = '''
@@ -31,13 +31,13 @@ class test_storage(unittest.TestCase):
         expected = {'disks': [
             {'mediaType': 'HDD', 'path': u'/dev/sda', 'serial': u'S35NNY0HA05094',
              'totalCapacityMB': 512110, 'model': u'SAMSUNG MZ7TN512'}]}
-        self.assertEquals(pytools.storage.get_storage_list(), expected)
+        self.assertEqual(pytools.storage.get_storage_list(), expected)
 
         # Test empty result, No disks
         check_output.return_value = '''{"blockdevices": []}'''
         expected = {'disks': []}
 
-        self.assertEquals(pytools.storage.get_storage_list(), expected)
+        self.assertEqual(pytools.storage.get_storage_list(), expected)
 
         # Test three results, one disk
         check_output.return_value = '''
@@ -64,7 +64,7 @@ class test_storage(unittest.TestCase):
         expected = {'disks': [
             {'mediaType': 'SSD', 'path': u'/dev/sda', 'serial': u'S35NNY0HA05094',
              'totalCapacityMB': 512110, 'model': u'SAMSUNG MZ7TN512'}]}
-        self.assertEquals(pytools.storage.get_storage_list(), expected)
+        self.assertEqual(pytools.storage.get_storage_list(), expected)
 
         # Test two results, no disks
         check_output.return_value = '''
@@ -76,7 +76,7 @@ class test_storage(unittest.TestCase):
                                     }
                                     '''
         expected = {'disks': []}
-        self.assertEquals(pytools.storage.get_storage_list(), expected)
+        self.assertEqual(pytools.storage.get_storage_list(), expected)
 
         # Test one result, error
         check_output.return_value = '''
@@ -87,4 +87,3 @@ class test_storage(unittest.TestCase):
                                     }
                                     '''
         self.assertRaises(KeyError, pytools.storage.get_storage_list)
-

@@ -8,3 +8,4 @@ strato-skipper==1.8.8
 docker-test-tools==1.3.0
 strato_pylint==24a982f095772988b459e5a3fbc070d6a884c932
 packaging-tools==cc926123e3b4abd14cda97c6457bdf64db259554
+pylint==1.8.2

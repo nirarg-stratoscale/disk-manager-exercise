@@ -33,10 +33,19 @@ image: build
 	# Build service image
 	skipper build $(name)
 
-test:
+test: flake8 pylint pytest
 
 	# Run go unit tests
 	go test -race ./...
+
+flake8:
+	python -m flake8 --config=setup.cfg lib/pytools --exclude=test_*
+
+pylint:
+	PYLINTHOME=$(PYLINTHOME) pylint -r n lib/pytools --disable=missing-docstring
+
+pytest:
+	nose2 --start-dir lib/
 
 format:
 
