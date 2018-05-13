@@ -5,6 +5,9 @@ import subprocess
 logging.basicConfig()
 _LOGGER = logging.getLogger(__name__)
 
+HOST_PROC_DIR = "hostproc"
+MOUNT_COMMAND = "--mount=/" + HOST_PROC_DIR + "/1/ns/mnt"
+
 
 def get_storage_list():
     os_output = _get_devices_json()
@@ -36,7 +39,7 @@ def _must_succeed(*args, **kwargs):  # EXEMPT_FROM_CODE_COVERAGE
 
 
 def _get_devices_json():
-    cmd = ['lsblk', '-o', 'NAME,SERIAL,TYPE,ROTA,SIZE,MODEL', '-p', '-blnd', '-e', '4,7,10,11,43']
+    cmd = ['nsenter', MOUNT_COMMAND, 'lsblk', '-o', 'NAME,SERIAL,TYPE,ROTA,SIZE,MODEL', '-p', '-blnd', '-e', '4,7,10,11,43']
     return _must_succeed(cmd).strip()
 
 
