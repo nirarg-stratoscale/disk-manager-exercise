@@ -42,7 +42,7 @@ flake8:
 	python -m flake8 --config=setup.cfg lib/pytools --exclude=test_*
 
 pylint:
-	PYLINTHOME=$(PYLINTHOME) pylint -r n lib/pytools --disable=missing-docstring
+	PYLINTHOME=$(PYLINTHOME) pylint -r n lib/pytools --disable=missing-docstring --max-line-length=145
 
 pytest:
 	nose2 --start-dir lib/
