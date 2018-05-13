@@ -10,7 +10,7 @@ MOUNT_COMMAND = "--mount=/" + HOST_PROC_DIR + "/1/ns/mnt"
 
 
 def get_storage_list():
-    os_output = _get_devices_json()
+    os_output = _get_devices_storage()
     result_json_data = _from_os_output_to_internal_json(os_output)
     # os_json_data = json.loads(os_list)
     # result_json_data = _from_os_json_to_internal_json(os_json_data)
@@ -26,6 +26,7 @@ def _check_output_log_if_needed(*args, **kwargs):  # EXEMPT_FROM_CODE_COVERAGE
                                      **kwargs)
     _LOGGER.debug("Command '%(command)s' finished successfully. Output was:\n%(output)s",
                   dict(command=command, output=output))
+    print(output)
     return output
 
 
@@ -38,8 +39,9 @@ def _must_succeed(*args, **kwargs):  # EXEMPT_FROM_CODE_COVERAGE
         raise
 
 
-def _get_devices_json():
-    cmd = ['nsenter', MOUNT_COMMAND, 'lsblk', '-o', 'NAME,SERIAL,TYPE,ROTA,SIZE,MODEL', '-p', '-blnd', '-e', '4,7,10,11,43']
+def _get_devices_storage():
+    cmd = ['nsenter', MOUNT_COMMAND, 'lsblk', '-o', 'NAME,SERIAL,TYPE,ROTA,SIZE,MODEL', '-p', '-blnd',
+           '-e', '4,7,10,11,43']
     return _must_succeed(cmd).strip()
 
 
