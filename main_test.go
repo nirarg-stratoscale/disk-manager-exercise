@@ -2,28 +2,21 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/Stratoscale/go-template/golib/middleware"
 	"github.com/Stratoscale/go-template/golib/testutil"
 
-	"github.com/Stratoscale/disk-manager-exercise/models"
-	"github.com/Stratoscale/disk-manager-exercise/restapi"
-"github.com/Stratoscale/disk-manager-exercise/restapi/operations/disk"
-
-)
+	"github.com/Stratoscale/disk-manager-exercise/restapi")
 
 var log = testutil.Log()
 
-const (
-	target = "http://diskmanagerexercise.service.strato:80/api/v2"
-)
+//const (
+//	target = "http://diskmanagerexercise.service.strato:80/api/v2"
+//)
 
 func TestHTTPHandler(t *testing.T) {
 	t.Parallel()
@@ -59,7 +52,7 @@ func TestHTTPHandler(t *testing.T) {
 
 			h, err := restapi.Handler(restapi.Config{
 				DiskAPI: &diskMock,
-			AuthMiddleware: middleware.Policy,
+			InnerMiddleware: middleware.Policy,
 				Logger:         log.Debugf,
 			})
 			require.Nil(t, err)

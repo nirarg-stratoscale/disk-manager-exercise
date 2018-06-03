@@ -21,7 +21,7 @@ class TestStorage(unittest.TestCase):
         check_output.return_value = b'/dev/sda S35NNY0HA05094 disk    1 512110190592 SAMSUNG MZ7TN512'
         expected = {'disks': [{'mediaType': 'HDD', 'path': u'/dev/sda', 'serial': u'S35NNY0HA05094',
                                'totalCapacityMB': 512110, 'model': u'SAMSUNG MZ7TN512'}]}
-        self.assertEqual(pytools.storage.get_storage_list(), expect
+        self.assertEqual(pytools.storage.get_storage_list(), expected)
 
 
     @mock.patch('subprocess.check_output')

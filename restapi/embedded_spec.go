@@ -175,8 +175,8 @@ func init() {
           "example": "stratonode2.node.strato"
         },
         "id": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "example": "23702960-b541-426e-a09f-6785f4fe76a1"
         },
         "mediaType": {
           "type": "string",

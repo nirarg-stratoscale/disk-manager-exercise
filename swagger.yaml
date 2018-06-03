@@ -105,8 +105,8 @@ definitions:
       - path
     properties:
       id:
-        type: integer
-        format: int64
+        type: string
+        example: '23702960-b541-426e-a09f-6785f4fe76a1'
       path:
         type: string
         example: '/dev/sda'

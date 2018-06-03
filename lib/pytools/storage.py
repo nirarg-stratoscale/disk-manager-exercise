@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import logging
 import subprocess
+import json
 
 logging.basicConfig()
 _LOGGER = logging.getLogger(__name__)
@@ -26,7 +27,6 @@ def _check_output_log_if_needed(*args, **kwargs):  # EXEMPT_FROM_CODE_COVERAGE
                                      **kwargs)
     _LOGGER.debug("Command '%(command)s' finished successfully. Output was:\n%(output)s",
                   dict(command=command, output=output))
-    print(output)
     return output
 
 
@@ -72,8 +72,8 @@ def _from_os_output_to_internal_json(os_output):
         output_element = line.split()
         element_internal_json = _from_os_output_element_to_internal_json(output_element)
         result_json_data['disks'].append(element_internal_json)
-    return result_json_data
+    return result_json_data['disks']
 
 
 if __name__ == '__main__':  # EXEMPT_FROM_CODE_COVERAGE
-    print(get_storage_list())
+    print(json.dumps(get_storage_list(), ensure_ascii=False))

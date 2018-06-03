@@ -27,7 +27,7 @@ type Disk struct {
 
 	// id
 	// Required: true
-	ID *int64 `json:"id"`
+	ID *string `json:"id"`
 
 	// media type
 	MediaType string `json:"mediaType,omitempty"`

@@ -1,4 +1,4 @@
-FROM rackattack-nas.dc1:5000/dev-base-go:2ffac073d15a0ec66d3246df10d91fcf6f09908a
+FROM rackattack-nas.dc1:5000/dev-base-go:f29be9e37542289b4b762e1e7a36e0ba30d7f667
 
 # Install subsystem tests python dependencies
 COPY subsystem/requirements.txt /tmp/requirements.txt

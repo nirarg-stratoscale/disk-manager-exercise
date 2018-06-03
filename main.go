@@ -12,16 +12,24 @@ import (
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/Stratoscale/disk-manager-exercise/internal/disk"
-	)
+	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
+	"fmt"
+	"github.com/Stratoscale/disk-manager-exercise/internal/osops"
+)
 
 var options struct {
 	App app.Config
-DB dbutil.Config
+	DB dbutil.Config
 	Consul consulutil.Config
 }
 
 func init() {
-	flag.Usage = func() { envconfig.Usage("", &options) }
+	flag.Usage = func() {
+		err := envconfig.Usage("", &options)
+		if err != nil {
+			panic(fmt.Sprintf("Usage error %s", err))
+		}
+		}
 	flag.Parse()
 }
 
@@ -51,11 +59,17 @@ func main() {
 	db, err := dbutil.Open(options.DB, a.Log.WithField("pkg", "db"))
 	a.FailOnError(err, "initializing database")
 	defer db.Close()
-	
+
+	osOps := osops.New(osops.Config{Log: a.Log.WithField("pkg", "osops"),})
+	diskAPI := diskops.NewOsDiskMgr(diskops.Config{
+		Log: a.Log.WithField("pkg", "diskops"),
+		OsOps: osOps,
+	})
 
 	disk := disk.New(disk.Config{
 		DB:  db,
 		Log: a.Log.WithField("pkg", "disk"),
+		DiskAPI: diskAPI,
 	})
 
 	err = disk.AutoMigrate()
@@ -66,7 +80,7 @@ func main() {
 	h, err := restapi.Handler(restapi.Config{
 		DiskAPI: disk,
 		Logger:         a.Log.WithField("pkg", "restapi").Debugf,
-		AuthMiddleware: middleware.Policy,
+		InnerMiddleware: middleware.Policy,
 	})
 	a.FailOnError(err, "initializing handler")
 
