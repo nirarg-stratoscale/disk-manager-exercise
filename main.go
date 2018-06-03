@@ -4,19 +4,19 @@ import (
 	"flag"
 
 	"github.com/Stratoscale/disk-manager-exercise/restapi"
+	"github.com/Stratoscale/go-template/golib/dbutil"
 	"github.com/Stratoscale/go-template/golib/app"
 	"github.com/Stratoscale/go-template/golib/consulutil"
-	"github.com/Stratoscale/go-template/golib/dbutil"
 	"github.com/Stratoscale/go-template/golib/middleware"
-	//"github.com/Stratoscale/golib/consul"
+	"github.com/Stratoscale/golib/consul"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/Stratoscale/disk-manager-exercise/internal/disk"
-)
+	)
 
 var options struct {
-	App    app.Config
-	DB     dbutil.Config
+	App app.Config
+DB dbutil.Config
 	Consul consulutil.Config
 }
 
@@ -36,34 +36,37 @@ func main() {
 
 	a.Log.Infof("Options: %+v", options)
 
-	//consulClient, err := consulutil.Client(options.Consul)
-	//a.FailOnError(err, "initialize consul client")
+	consulClient, err := consulutil.Client(options.Consul)
+	a.FailOnError(err, "initialize consul client")
 
-	//credentialer := dbutil.Credentialer{
-	//	KV:     consulClient.KV(),
-	//	Locker: consul.NewLocker(consulClient),
-	//	Log:    a.Log.WithField("pkg", "credentials"),
-	//}
+	credentialer := dbutil.Credentialer{
+		KV: consulClient.KV(),
+		Locker: consul.NewLocker(consulClient),
+		Log: a.Log.WithField("pkg", "credentials"),
+	}
 
-	//err = credentialer.ConnectionString(&options.DB)
-	//a.FailOnError(err, "connection string")
+	err = credentialer.ConnectionString(&options.DB)
+	a.FailOnError(err, "connection string")
 
-	//db, err := dbutil.Open(options.DB, a.Log.WithField("pkg", "db"))
-	//a.FailOnError(err, "initializing database")
-	//defer db.Close()
+	db, err := dbutil.Open(options.DB, a.Log.WithField("pkg", "db"))
+	a.FailOnError(err, "initializing database")
+	defer db.Close()
+	
 
 	disk := disk.New(disk.Config{
-		//DB:  db,
+		DB:  db,
 		Log: a.Log.WithField("pkg", "disk"),
 	})
 
-	//err = disk.AutoMigrate()
-	//a.FailOnError(err, "migrating disk database")
+	err = disk.AutoMigrate()
+	a.FailOnError(err, "migrating disk database")
+	
+	
 
 	h, err := restapi.Handler(restapi.Config{
-		DiskAPI:        disk,
+		DiskAPI: disk,
 		Logger:         a.Log.WithField("pkg", "restapi").Debugf,
-		InnerMiddleware: middleware.Policy,
+		AuthMiddleware: middleware.Policy,
 	})
 	a.FailOnError(err, "initializing handler")
 

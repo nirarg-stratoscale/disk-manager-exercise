@@ -169,10 +169,6 @@ func init() {
           "type": "string",
           "example": "2018-05-02T07:07:38.718575"
         },
-        "freeCapacityMB": {
-          "type": "integer",
-          "format": "int64"
-        },
         "hostname": {
           "type": "string",
           "x-go-custom-tag": "gorm:\"primary_key\" query:\"filter,sort\"",

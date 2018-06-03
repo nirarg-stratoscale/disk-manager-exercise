@@ -13,6 +13,7 @@
   "scheme": "http", 
   "service_group": "API Services", 
   "service_group_name_for_api_docs": "ALARM", 
-  "swagger_path": "/home/nargaman/work/go/src/github.com/Stratoscale/swagger-templates/disk-manager-exercise-swagger.yaml", 
+  "slack_channel_for_pr_notifications": "", 
+  "swagger_path": "/home/nargaman/work/go/src/github.com/Stratoscale/swagger.yaml", 
   "use_database": "True"
 }

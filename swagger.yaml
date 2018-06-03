@@ -119,9 +119,6 @@ definitions:
       model:
         type: string
         example: 'Micron_5200_MTFDDAK480TDC'
-      freeCapacityMB:
-        type: integer
-        format: int64
       totalCapacityMB:
         type: integer
         format: int64

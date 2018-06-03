@@ -3,23 +3,22 @@
 # =========================================================================
 
 HOST_PWD ?= $(PWD)
-HOST_GOPATH ?= $(GOPATH)
 SERVICE_NAME = disk-manager-exercise
 VERSION=$(shell git rev-parse HEAD || echo none)
 RPM_BUILD_ROOT ?= $(HOST_PWD)/build/rpmbuild
 GO_SOURCE_FILES = $(shell find -name "*.go")
-STRATO_GO_SWAGGER = docker run --rm -it \
-	-e GOPATH=$(HOST_GOPATH):/go \
-	-v $(HOST_GOPATH):$(HOST_GOPATH) \
-	-w $(HOST_PWD) \
+STRATO_GO_SWAGGER = docker run --rm \
+	-e GOPATH=/go \
+	-v $(HOST_PWD):/go/src/github.com/Stratoscale/disk-manager-exercise \
+	-w /go/src/github.com/Stratoscale/disk-manager-exercise \
 	-u $(shell id -u):$(shell id -g) \
-	stratoscale/swagger:v1.0.6
+	stratoscale/swagger:v1.0.9
 
 # =========================================================================
 
-.PHONY: build generate-by-swagger generate-client generate-server go-generate clean image format test subsystem
+.PHONY: build generate-by-swagger generate-client generate-server go-generate clean image format lint test subsystem
 
-all: test subsystem rpm
+all: lint test subsystem rpm
 
 build: build/disk-manager-exercise build/disk-manager-exercise-client/dist/disk-manager-exercise-client-*.tar.gz
 
@@ -33,19 +32,15 @@ image: build
 	# Build service image
 	skipper build $(name)
 
-test: flake8 pylint pytest
+lint:
+
+	# Run static code analysis
+	golangci-lint run --enable goimports --enable gocyclo --tests
+
+test:
 
 	# Run go unit tests
 	go test -race ./...
-
-flake8:
-	python -m flake8 --config=setup.cfg lib/pytools --exclude=test_*
-
-pylint:
-	PYLINTHOME=$(PYLINTHOME) pylint -r n lib/pytools --disable=missing-docstring --max-line-length=145
-
-pytest:
-	nose2 --start-dir lib/
 
 format:
 
@@ -85,11 +80,6 @@ dep-ensure:
 	# Ensure a dependency is safely vendored in the project
 	dep ensure
 
-dep-init:
-
-	# Initialize a new project with manifest and lock files
-	dep init -v
-
 rpm: $(shell find deploy -type f)
 	rpmbuild -bb -vv --define "_srcdir $(HOST_PWD)" --define "_topdir $(RPM_BUILD_ROOT)" deploy/install.spec
 
@@ -100,7 +90,7 @@ build/disk-manager-exercise-client/dist/disk-manager-exercise-client-*.tar.gz: s
 
 	# Use swagger-codegen container to generate python client code
 	@echo '{"packageName" : "disk_manager_exercise_client", "packageVersion": "$(VERSION)"}' > build/code-gen-config.json
-	docker run -it --rm \
+	docker run --rm \
         -u $(shell id -u $(USER)) \
         -v $(HOST_PWD)/build:/swagger-api/out \
         -v $(HOST_PWD)/swagger.yaml:/swagger.yaml:ro \
@@ -129,3 +119,12 @@ ifdef BENCHMARK
 	ARTIFACT_DIR=reports/benchmark \
 	report subsystem/logs/stats/diskmanagerexercise_disk-manager-exercise_1.json
 endif
+
+package: image build
+	packager pack artifacts.yaml --auto-push
+
+generate_upgrade_manifest:
+	python -m packaging_tools.upgrade_manifest_generator artifacts.yaml --file build/update_manifest.json --dirty
+
+deploy: package generate_upgrade_manifest
+	upgrade -v $(IP) build/update_manifest.json

@@ -22,9 +22,6 @@ type Disk struct {
 	// created at
 	CreatedAt string `json:"createdAt,omitempty"`
 
-	// free capacity m b
-	FreeCapacityMB int64 `json:"freeCapacityMB,omitempty"`
-
 	// hostname
 	Hostname string `json:"hostname,omitempty" gorm:"primary_key" query:"filter,sort"`
 

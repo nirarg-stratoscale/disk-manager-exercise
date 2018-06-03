@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Stratoscale/swagger/auth"
 	"github.com/Stratoscale/swagger/query"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/loads"
@@ -35,7 +34,15 @@ type Config struct {
 	// InnerMiddleware is for the handler executors. These do not apply to the swagger.json document.
 	// The middleware executes after routing but before authentication, binding and validation
 	InnerMiddleware func(http.Handler) http.Handler
-	Auth            auth.Auth
+
+	// Authorizer is used to authorize a request after the Auth function was called using the "Auth*" functions
+	// and the principal was stored in the context using the "StoreAuth" function.
+	Authorizer func(*http.Request) error
+
+	// StoreAuth is used to store a principal in the request context.
+	// After storing the principal in the context, one can get it from the context in the business logic
+	// using a dedicated typed function.
+	StoreAuth func(context.Context, interface{}) context.Context
 }
 
 // Handler returns an http.Handler given the handler configuration
@@ -53,12 +60,16 @@ func Handler(c Config) (http.Handler, error) {
 	api.JSONProducer = runtime.JSONProducer()
 	api.DiskDiskByIDHandler = disk.DiskByIDHandlerFunc(func(params disk.DiskByIDParams, principal interface{}) middleware.Responder {
 		ctx := params.HTTPRequest.Context()
-		ctx = c.Auth.Store(ctx, principal)
+		if c.StoreAuth != nil {
+			ctx = c.StoreAuth(ctx, principal)
+		}
 		return c.DiskAPI.DiskByID(ctx, params)
 	})
 	api.DiskListDisksHandler = disk.ListDisksHandlerFunc(func(params disk.ListDisksParams, principal interface{}) middleware.Responder {
 		ctx := params.HTTPRequest.Context()
-		ctx = c.Auth.Store(ctx, principal)
+		if c.StoreAuth != nil {
+			ctx = c.StoreAuth(ctx, principal)
+		}
 		return c.DiskAPI.ListDisks(ctx, params)
 	})
 	api.ServerShutdown = func() {}
@@ -76,4 +87,21 @@ func swaggerCopy(orig json.RawMessage) json.RawMessage {
 	c := make(json.RawMessage, len(orig))
 	copy(c, orig)
 	return c
+}
+
+// authorizer is a helper struct to implement the runtime.Authorizer interface.
+type authorizer struct {
+	authorize func(*http.Request) error
+	store     func(context.Context, interface{}) context.Context
+}
+
+func (a *authorizer) Authorize(req *http.Request, principal interface{}) error {
+	ctx := req.Context()
+	if a.store != nil {
+		ctx = a.store(ctx, principal)
+	}
+	if a.authorize == nil {
+		return nil
+	}
+	return a.authorize(req.WithContext(ctx))
 }
