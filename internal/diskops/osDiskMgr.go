@@ -8,6 +8,17 @@ import (
 	"encoding/json"
 )
 
+type pyStorageResponse struct {
+	Path string           `json:"path"`
+	Serial string         `json:"serial"`
+	MediaType string      `json:"mediaType"`
+	Model string          `json:"model"`
+	TotalCapacityMB int64 `json:"totalCapacityMB"`
+
+}
+
+type ListResponse []*pyStorageResponse
+
 type Config struct {
 	Log logrus.FieldLogger
 	OsOps osops.OSOperations
@@ -26,19 +37,19 @@ type OsDiskMgr struct {
 func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody , error) {
 	out, err1 := o.OsOps.ExecCommand("python", "lib/pytools/storage.py")
 	if err1 != nil {
-		return nil, err1
+		return nil, httputil.NewErrInternalServer("ListDisks failed to get the disks info with error %s", err1)
 	}
 
 	result := models.ListDisksOKBody{}
 
-	lst := models.ListDisksOKBody{}
+	lst := ListResponse{}
 	err2 := json.Unmarshal([]byte(out), &lst)
 	if err2 != nil {
-		return nil, err2
+		return nil, httputil.NewErrInternalServer("ListDisks failed to unmarshal os json response with error %s", err2)
 	}
 	hostname, err3 := o.OsOps.Hostname()
 	if err3 != nil {
-		hostname = "UNKNOWN"
+		return nil, httputil.NewErrInternalServer("ListDisks failed to get the hostname with error %s", err3)
 	}
 	for _, val := range lst {
 		id := "1234" //TODO generate UUID with seed
@@ -46,7 +57,7 @@ func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody , error)
 			Hostname: hostname,
 			MediaType: val.MediaType,
 			Model: val.Model,
-			Path: val.Path,
+			Path: &val.Path,
 			Serial: val.Serial,
 			TotalCapacityMB: val.TotalCapacityMB}
 		result = append(result, &disk)
@@ -69,5 +80,5 @@ func (o *OsDiskMgr) DiskByID(id string) (*models.Disk, error) {
 			return disk, nil
 		}
 	}
-	return nil, httputil.NewErrBadRequest("Invalid ID %d", id)
+	return nil, httputil.NewErrBadRequest("Invalid ID %s", id)
 }
