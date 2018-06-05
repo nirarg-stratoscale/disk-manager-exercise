@@ -66,7 +66,7 @@ func main() {
 	})
 
 	disk := disk.New(disk.Config{
-		//DB:  db,
+		DB:      db,
 		Log:     a.Log.WithField("pkg", "disk"),
 		DiskAPI: diskAPI,
 	})
