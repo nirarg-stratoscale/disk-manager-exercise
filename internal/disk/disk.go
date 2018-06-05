@@ -1,27 +1,27 @@
 package disk
 
 import (
-    "context"
+	"context"
+	"fmt"
 
-	"github.com/Stratoscale/disk-manager-exercise/restapi/operations/disk"
+	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
 	"github.com/Stratoscale/disk-manager-exercise/models"
-	"github.com/jinzhu/gorm"
-	"github.com/sirupsen/logrus"
+	"github.com/Stratoscale/disk-manager-exercise/restapi/operations/disk"
 	"github.com/Stratoscale/golib/httputil"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
-	"fmt"
+	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
-	DB  *gorm.DB
-	Log logrus.FieldLogger
+	DB      *gorm.DB
+	Log     logrus.FieldLogger
 	DiskAPI diskops.DiskAPI
 }
 
 func New(c Config) *manager {
 	return &manager{
-		Config:  c,
+		Config: c,
 	}
 }
 

@@ -2,10 +2,11 @@ package osops
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
+
 	"github.com/sirupsen/logrus"
-	"os"
 )
 
 type Config struct {

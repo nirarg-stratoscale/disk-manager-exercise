@@ -1,29 +1,29 @@
 package diskops
 
 import (
-	"github.com/Stratoscale/disk-manager-exercise/models"
-	"github.com/sirupsen/logrus"
-	"github.com/Stratoscale/golib/httputil"
-	"github.com/Stratoscale/disk-manager-exercise/internal/osops"
 	"encoding/json"
+
+	"github.com/Stratoscale/disk-manager-exercise/internal/osops"
+	"github.com/Stratoscale/disk-manager-exercise/models"
+	"github.com/Stratoscale/golib/httputil"
 	"github.com/satori/go.uuid"
+	"github.com/sirupsen/logrus"
 )
 
 const BaseUuid = "a99aac7c-688b-11e8-b6ea-c85b7692659d"
 
 type pyStorageResponse struct {
-	Path string           `json:"path"`
-	Serial string         `json:"serial"`
-	MediaType string      `json:"mediaType"`
-	Model string          `json:"model"`
-	TotalCapacityMB int64 `json:"totalCapacityMB"`
-
+	Path            string `json:"path"`
+	Serial          string `json:"serial"`
+	MediaType       string `json:"mediaType"`
+	Model           string `json:"model"`
+	TotalCapacityMB int64  `json:"totalCapacityMB"`
 }
 
 type ListResponse []*pyStorageResponse
 
 type Config struct {
-	Log logrus.FieldLogger
+	Log   logrus.FieldLogger
 	OsOps osops.OSOperations
 }
 
@@ -37,7 +37,7 @@ type OsDiskMgr struct {
 	Config
 }
 
-func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody , error) {
+func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody, error) {
 	out, err1 := o.OsOps.ExecCommand("python", "lib/pytools/storage.py")
 	if err1 != nil {
 		return nil, httputil.NewErrInternalServer("ListDisks failed to get the disks info with error %s", err1)
@@ -62,11 +62,11 @@ func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody , error)
 		uuidFromSerial := uuid.NewV3(baseUuid, val.Serial)
 		id := uuidFromSerial.String()
 		disk := models.Disk{ID: &id,
-			Hostname: hostname,
-			MediaType: val.MediaType,
-			Model: val.Model,
-			Path: &val.Path,
-			Serial: val.Serial,
+			Hostname:        hostname,
+			MediaType:       val.MediaType,
+			Model:           val.Model,
+			Path:            &val.Path,
+			Serial:          val.Serial,
 			TotalCapacityMB: val.TotalCapacityMB}
 		result = append(result, &disk)
 	}

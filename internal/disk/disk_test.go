@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
+	"github.com/Stratoscale/disk-manager-exercise/models"
 	"github.com/Stratoscale/disk-manager-exercise/restapi/operations/disk"
 	"github.com/Stratoscale/go-template/golib/testutil"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/stretchr/testify/assert"
-	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
-	"github.com/Stratoscale/disk-manager-exercise/models"
 )
 
 var log = testutil.Log()
@@ -19,17 +19,17 @@ func TestListDisks(t *testing.T) {
 
 	id := "1234"
 	hostName := "Test1"
-	out := models.ListDisksOKBody{&models.Disk{ID:&id}}
+	out := models.ListDisksOKBody{&models.Disk{ID: &id}}
 
 	tests := []struct {
-		name    string
-		params  disk.ListDisksParams
-		want    middleware.Responder
+		name   string
+		params disk.ListDisksParams
+		want   middleware.Responder
 	}{
 		{
-		    name: "TestListDisks-1",
+			name:   "TestListDisks-1",
 			params: disk.ListDisksParams{Hostname: &hostName},
-		    want: disk.NewListDisksOK().WithPayload(out),
+			want:   disk.NewListDisksOK().WithPayload(out),
 		},
 	}
 
@@ -39,18 +39,16 @@ func TestListDisks(t *testing.T) {
 			t.Parallel()
 
 			var (
-
 				db = testutil.OpenDB(t)
 
 				diskApiMock = new(diskops.MockDiskAPI)
 
-				p  = New(Config{DB: db, Log: log, DiskAPI: diskApiMock})
+				p = New(Config{DB: db, Log: log, DiskAPI: diskApiMock})
 			)
 
 			diskApiMock.On("ListDisks", &hostName).Return(out, nil)
 
 			testutil.SyncAutoMigrate(t, p.AutoMigrate)
-
 
 			got := p.ListDisks(context.Background(), tt.params)
 			assert.Equal(t, tt.want, got)
@@ -58,23 +56,21 @@ func TestListDisks(t *testing.T) {
 	}
 }
 
-
-
 func TestDiskById(t *testing.T) {
 	t.Parallel()
 
 	id := "1234"
-	out := models.Disk{ID:&id}
+	out := models.Disk{ID: &id}
 
 	tests := []struct {
-		name    string
-		params  disk.DiskByIDParams
-		want    middleware.Responder
+		name   string
+		params disk.DiskByIDParams
+		want   middleware.Responder
 	}{
 		{
-		    name: "TestDiskById-1",
+			name:   "TestDiskById-1",
 			params: disk.DiskByIDParams{DiskID: id},
-		    want: disk.NewDiskByIDOK().WithPayload(&out),
+			want:   disk.NewDiskByIDOK().WithPayload(&out),
 		},
 	}
 
@@ -84,18 +80,16 @@ func TestDiskById(t *testing.T) {
 			t.Parallel()
 
 			var (
-
 				db = testutil.OpenDB(t)
 
 				diskApiMock = new(diskops.MockDiskAPI)
 
-				p  = New(Config{DB: db, Log: log, DiskAPI: diskApiMock})
+				p = New(Config{DB: db, Log: log, DiskAPI: diskApiMock})
 			)
 
 			diskApiMock.On("DiskByID", tt.params.DiskID).Return(&out, nil)
 
 			testutil.SyncAutoMigrate(t, p.AutoMigrate)
-
 
 			got := p.DiskByID(context.Background(), tt.params)
 			assert.Equal(t, tt.want, got)
