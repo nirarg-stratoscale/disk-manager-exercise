@@ -43,10 +43,7 @@
 
 [[projects]]
   name = "github.com/Stratoscale/swagger"
-  packages = [
-    "auth",
-    "query"
-  ]
+  packages = ["query"]
   revision = "726d6b5646ae99ce823965027e2e48f010e20ac2"
   version = "v1.0.7"
 
@@ -242,6 +239,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
@@ -328,6 +331,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7948b6509ee9d411fecc2cd6a3a613b925e26de42c86d07c3bfcad2ddd726868"
+  inputs-digest = "6848192c0a7e6326d627bdde368b8b725a6ad4104ca6d3fb57c522accb6c282f"
   solver-name = "gps-cdcl"
   solver-version = 1
