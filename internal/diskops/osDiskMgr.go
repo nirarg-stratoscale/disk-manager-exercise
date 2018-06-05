@@ -6,7 +6,10 @@ import (
 	"github.com/Stratoscale/golib/httputil"
 	"github.com/Stratoscale/disk-manager-exercise/internal/osops"
 	"encoding/json"
+	"github.com/satori/go.uuid"
 )
+
+const BaseUuid = "a99aac7c-688b-11e8-b6ea-c85b7692659d"
 
 type pyStorageResponse struct {
 	Path string           `json:"path"`
@@ -52,7 +55,12 @@ func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody , error)
 		return nil, httputil.NewErrInternalServer("ListDisks failed to get the hostname with error %s", err3)
 	}
 	for _, val := range lst {
-		id := "1234" //TODO generate UUID with seed
+		baseUuid, err4 := uuid.FromString(BaseUuid)
+		if err4 != nil {
+			return nil, httputil.NewErrInternalServer("ListDisks failed to generate uuid from serial %s with error %s", val.Serial, err4)
+		}
+		uuidFromSerial := uuid.NewV3(baseUuid, val.Serial)
+		id := uuidFromSerial.String()
 		disk := models.Disk{ID: &id,
 			Hostname: hostname,
 			MediaType: val.MediaType,

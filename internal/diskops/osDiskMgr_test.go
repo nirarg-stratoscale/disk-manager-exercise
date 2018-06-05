@@ -16,7 +16,8 @@ var log = testutil.Log()
 func TestListDisks(t *testing.T) {
 	t.Parallel()
 
-	id := "1234"
+	id1 := "3ee19fad-c471-3adb-bce1-7c6c025cea7a"
+	id2 := "619b5756-d6bd-3208-88f0-e97326f5fd5f"
 	path1 := "/dev/sda1"
 	path2 := "/dev/sda2"
 
@@ -33,14 +34,14 @@ func TestListDisks(t *testing.T) {
 		{
 			name: "TestListDisks-ok",
 			arg1: "Test1",
-			want: models.ListDisksOKBody{&models.Disk{ID: &id,
+			want: models.ListDisksOKBody{&models.Disk{ID: &id1,
 											Hostname: "host-test-1",
 											MediaType: "SSD",
 											Model: "SAMSUNG1 MZ7TN512",
 											Path: &path1,
 											Serial: "S35NNY0HA05094111",
 											TotalCapacityMB: 5121101},
-										&models.Disk{ID: &id,
+										&models.Disk{ID: &id2,
 											Hostname: "host-test-1",
 											MediaType: "HDD",
 											Model: "SAMSUNG2 MZ7TN512",
@@ -64,22 +65,20 @@ func TestListDisks(t *testing.T) {
 			arg1: "Test3",
 			pyErr: fmt.Errorf("test error"),
 			hostResult: "host-test-1",
-			wantErr: httputil.NewError(500, "ListDisks failed to get the disks info with error test error"),
+			wantErr: httputil.NewErrInternalServer("ListDisks failed to get the disks info with error test error"),
 		},
 		{
 			name: "TestListDisks-hostname error",
 			arg1: "Test4",
 			pyResult: "[{\"path\": \"/dev/sda1\", \"serial\": \"S35NNY0HA05094111\", \"model\": \"SAMSUNG1 MZ7TN512\", \"totalCapacityMB\": 5121101, \"mediaType\": \"SSD\"}]",
 			hostErr: fmt.Errorf("hostname test error"),
-			wantErr: httputil.NewError(500, "ListDisks failed to get the hostname with error hostname test error"),
+			wantErr: httputil.NewErrInternalServer("ListDisks failed to get the hostname with error hostname test error"),
 		},
 	}
 
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			var (
 				osOpsMock = new(osops.MockOSOperations)
 
@@ -106,7 +105,7 @@ func TestListDisks(t *testing.T) {
 func TestDiskByID(t *testing.T) {
 	t.Parallel()
 
-	id := "1234"
+	id := "3ee19fad-c471-3adb-bce1-7c6c025cea7a"
 	path1 := "/dev/sda1"
 
 	tests := []struct {
@@ -144,7 +143,7 @@ func TestDiskByID(t *testing.T) {
 			arg1: id,
 			pyResult: "[]",
 			hostResult: "host-test-1",
-			wantErr: httputil.NewErrInternalServer("DiskByID with id 1234 failed because ListDisks returns empty list"),
+			wantErr: httputil.NewErrInternalServer("DiskByID with id %s failed because ListDisks returns empty list", id),
 		},
 		{
 			name: "TestDiskByID-unmarshal error",
@@ -158,14 +157,14 @@ func TestDiskByID(t *testing.T) {
 			arg1: id,
 			pyErr: fmt.Errorf("test error"),
 			hostResult: "host-test-1",
-			wantErr: httputil.NewError(500, "ListDisks failed to get the disks info with error test error"),
+			wantErr: httputil.NewErrInternalServer("ListDisks failed to get the disks info with error test error"),
 		},
 		{
 			name: "TestDiskByID-hostname error",
 			arg1: id,
 			pyResult: "[{\"path\": \"/dev/sda1\", \"serial\": \"S35NNY0HA05094111\", \"model\": \"SAMSUNG1 MZ7TN512\", \"totalCapacityMB\": 5121101, \"mediaType\": \"SSD\"}]",
 			hostErr: fmt.Errorf("hostname test error"),
-			wantErr: httputil.NewError(500, "ListDisks failed to get the hostname with error hostname test error"),
+			wantErr: httputil.NewErrInternalServer("ListDisks failed to get the hostname with error hostname test error"),
 		},
 	}
 
