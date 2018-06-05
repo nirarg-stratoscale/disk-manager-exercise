@@ -15,6 +15,17 @@ consumes:
 produces:
   - application/json
 
+securityDefinitions:
+  roles:
+    type: apiKey
+    in: header
+    name: X-Auth-Roles
+
+security:
+  - roles:
+    - admin
+    - _member_
+
 paths:
   /disks:
     get:
@@ -51,10 +62,6 @@ paths:
           description: Internal Error
           schema:
             $ref: '#/definitions/error500'
-      security:
-        - roles:
-            - admin
-            - member
   /disks/{disk_id}:
       get:
         tags:
@@ -92,10 +99,6 @@ paths:
             description: Internal Error
             schema:
               $ref: '#/definitions/error500'
-        security:
-          - roles:
-              - admin
-              - member
 
 definitions:
   Disk:
