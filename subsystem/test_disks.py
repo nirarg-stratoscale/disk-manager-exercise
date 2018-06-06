@@ -13,8 +13,7 @@ class TestDisks(base.BaseTest):
     def test_disks_list(self):
         """Validate service api."""
         logging.info('Validating api response')
-        import ipdb
-        ipdb.set_trace()
+        
         with self.assertRaises(disk_manager_exercise_client.rest.ApiException) as context:
             # TODO: Use client lib to invoke the API methods, e.g
             self.client.list_disks()

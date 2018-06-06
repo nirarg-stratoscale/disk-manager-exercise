@@ -20,9 +20,6 @@ class BaseTest(base_test.BaseDockerTest):
 
         api_client_config = disk_manager_exercise_client.Configuration()
         api_client_config.host = self.ENDPOINT
-        
-        import ipdb
-        ipdb.set_trace()
 
         api_client=disk_manager_exercise_client.ApiClient(configuration=api_client_config)
         api_client.default_headers['X-Auth-Project-Id'] = self.DEFAULT_PROJECT_ID
