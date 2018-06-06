@@ -13,7 +13,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/Stratoscale/disk-manager-exercise/models"
+	models "github.com/Stratoscale/disk-manager-exercise/models"
 )
 
 // ListDisksReader is a Reader for the ListDisks structure.
@@ -75,7 +75,7 @@ func NewListDisksOK() *ListDisksOK {
 successful operation
 */
 type ListDisksOK struct {
-	Payload models.ListDisksOKBody
+	Payload []*models.Disk
 }
 
 func (o *ListDisksOK) Error() string {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/Stratoscale/disk-manager-exercise/models"
+	models "github.com/Stratoscale/disk-manager-exercise/models"
 )
 
 // DiskByIDOKCode is the HTTP code returned for type DiskByIDOK
@@ -30,6 +30,7 @@ type DiskByIDOK struct {
 
 // NewDiskByIDOK creates DiskByIDOK with default headers values
 func NewDiskByIDOK() *DiskByIDOK {
+
 	return &DiskByIDOK{}
 }
 
@@ -73,6 +74,7 @@ type DiskByIDBadRequest struct {
 
 // NewDiskByIDBadRequest creates DiskByIDBadRequest with default headers values
 func NewDiskByIDBadRequest() *DiskByIDBadRequest {
+
 	return &DiskByIDBadRequest{}
 }
 
@@ -115,6 +117,7 @@ type DiskByIDUnauthorized struct {
 
 // NewDiskByIDUnauthorized creates DiskByIDUnauthorized with default headers values
 func NewDiskByIDUnauthorized() *DiskByIDUnauthorized {
+
 	return &DiskByIDUnauthorized{}
 }
 
@@ -157,6 +160,7 @@ type DiskByIDForbidden struct {
 
 // NewDiskByIDForbidden creates DiskByIDForbidden with default headers values
 func NewDiskByIDForbidden() *DiskByIDForbidden {
+
 	return &DiskByIDForbidden{}
 }
 
@@ -199,6 +203,7 @@ type DiskByIDNotFound struct {
 
 // NewDiskByIDNotFound creates DiskByIDNotFound with default headers values
 func NewDiskByIDNotFound() *DiskByIDNotFound {
+
 	return &DiskByIDNotFound{}
 }
 
@@ -241,6 +246,7 @@ type DiskByIDInternalServerError struct {
 
 // NewDiskByIDInternalServerError creates DiskByIDInternalServerError with default headers values
 func NewDiskByIDInternalServerError() *DiskByIDInternalServerError {
+
 	return &DiskByIDInternalServerError{}
 }
 

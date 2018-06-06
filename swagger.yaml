@@ -22,9 +22,7 @@ securityDefinitions:
     name: X-Auth-Roles
 
 security:
-  - roles:
-    - admin
-    - _member_
+  - roles: []
 
 paths:
   /disks:
@@ -62,6 +60,11 @@ paths:
           description: Internal Error
           schema:
             $ref: '#/definitions/error500'
+      security:
+        - roles:
+          - admin
+          - _member_
+
   /disks/{disk_id}:
       get:
         tags:
@@ -99,6 +102,10 @@ paths:
             description: Internal Error
             schema:
               $ref: '#/definitions/error500'
+        security:
+          - roles:
+            - admin
+            - _member_
 
 definitions:
   Disk:

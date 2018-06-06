@@ -15,9 +15,9 @@ import (
 )
 
 // NewDiskByIDParams creates a new DiskByIDParams object
-// with the default values initialized.
+// no default values defined in spec.
 func NewDiskByIDParams() DiskByIDParams {
-	var ()
+
 	return DiskByIDParams{}
 }
 
@@ -38,9 +38,12 @@ type DiskByIDParams struct {
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
-// for simple values it will use straight method calls
+// for simple values it will use straight method calls.
+//
+// To ensure default values, the struct must have been initialized with NewDiskByIDParams() beforehand.
 func (o *DiskByIDParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
+
 	o.HTTPRequest = r
 
 	rDiskID, rhkDiskID, _ := route.Params.GetOK("disk_id")
@@ -59,6 +62,9 @@ func (o *DiskByIDParams) bindDiskID(rawData []string, hasKey bool, formats strfm
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
 	}
+
+	// Required: true
+	// Parameter is provided by construction from the route
 
 	o.DiskID = raw
 

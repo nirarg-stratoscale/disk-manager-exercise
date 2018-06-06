@@ -1,6 +1,7 @@
-FROM rackattack-nas.dc1:5000/dev-base-go:f29be9e37542289b4b762e1e7a36e0ba30d7f667
+FROM rackattack-nas.dc1:5000/staging/dev-base-go:f29be9e37542289b4b762e1e7a36e0ba30d7f667
 
 # Install subsystem tests python dependencies
 COPY subsystem/requirements.txt /tmp/requirements.txt
 COPY lib lib
+COPY setup.cfg setup.cfg
 RUN pip install -r /tmp/requirements.txt

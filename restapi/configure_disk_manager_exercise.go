@@ -14,10 +14,15 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/Stratoscale/disk-manager-exercise/models"
 	"github.com/Stratoscale/disk-manager-exercise/restapi/operations"
 	"github.com/Stratoscale/disk-manager-exercise/restapi/operations/disk"
+
+	models "github.com/Stratoscale/disk-manager-exercise/models"
 )
+
+type contextKey string
+
+const AuthKey contextKey = "Auth"
 
 //go:generate mockery -name DiskAPI -inpkg
 
@@ -36,13 +41,11 @@ type Config struct {
 	InnerMiddleware func(http.Handler) http.Handler
 
 	// Authorizer is used to authorize a request after the Auth function was called using the "Auth*" functions
-	// and the principal was stored in the context using the "StoreAuth" function.
+	// and the principal was stored in the context in the "AuthKey" context value.
 	Authorizer func(*http.Request) error
 
-	// StoreAuth is used to store a principal in the request context.
-	// After storing the principal in the context, one can get it from the context in the business logic
-	// using a dedicated typed function.
-	StoreAuth func(context.Context, interface{}) context.Context
+	// AuthRoles Applies when the "X-Auth-Roles" header is set
+	AuthRoles func(token string) (interface{}, error)
 }
 
 // Handler returns an http.Handler given the handler configuration
@@ -58,18 +61,22 @@ func Handler(c Config) (http.Handler, error) {
 
 	api.JSONConsumer = runtime.JSONConsumer()
 	api.JSONProducer = runtime.JSONProducer()
+	api.RolesAuth = func(token string) (interface{}, error) {
+		if c.AuthRoles == nil {
+			return token, nil
+		}
+		return c.AuthRoles(token)
+	}
+
+	api.APIAuthorizer = authorizer(c.Authorizer)
 	api.DiskDiskByIDHandler = disk.DiskByIDHandlerFunc(func(params disk.DiskByIDParams, principal interface{}) middleware.Responder {
 		ctx := params.HTTPRequest.Context()
-		if c.StoreAuth != nil {
-			ctx = c.StoreAuth(ctx, principal)
-		}
+		ctx = storeAuth(ctx, principal)
 		return c.DiskAPI.DiskByID(ctx, params)
 	})
 	api.DiskListDisksHandler = disk.ListDisksHandlerFunc(func(params disk.ListDisksParams, principal interface{}) middleware.Responder {
 		ctx := params.HTTPRequest.Context()
-		if c.StoreAuth != nil {
-			ctx = c.StoreAuth(ctx, principal)
-		}
+		ctx = storeAuth(ctx, principal)
 		return c.DiskAPI.ListDisks(ctx, params)
 	})
 	api.ServerShutdown = func() {}
@@ -89,19 +96,17 @@ func swaggerCopy(orig json.RawMessage) json.RawMessage {
 	return c
 }
 
-// authorizer is a helper struct to implement the runtime.Authorizer interface.
-type authorizer struct {
-	authorize func(*http.Request) error
-	store     func(context.Context, interface{}) context.Context
-}
+// authorizer is a helper function to implement the runtime.Authorizer interface.
+type authorizer func(*http.Request) error
 
-func (a *authorizer) Authorize(req *http.Request, principal interface{}) error {
-	ctx := req.Context()
-	if a.store != nil {
-		ctx = a.store(ctx, principal)
-	}
-	if a.authorize == nil {
+func (a authorizer) Authorize(req *http.Request, principal interface{}) error {
+	if a == nil {
 		return nil
 	}
-	return a.authorize(req.WithContext(ctx))
+	ctx := storeAuth(req.Context(), principal)
+	return a(req.WithContext(ctx))
+}
+
+func storeAuth(ctx context.Context, principal interface{}) context.Context {
+	return context.WithValue(ctx, AuthKey, principal)
 }

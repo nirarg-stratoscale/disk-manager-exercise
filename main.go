@@ -8,11 +8,12 @@ import (
 	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
 	"github.com/Stratoscale/disk-manager-exercise/internal/osops"
 	"github.com/Stratoscale/disk-manager-exercise/restapi"
-	"github.com/Stratoscale/go-template/golib/app"
-	"github.com/Stratoscale/go-template/golib/consulutil"
-	"github.com/Stratoscale/go-template/golib/dbutil"
-	"github.com/Stratoscale/go-template/golib/middleware"
+
+	"github.com/Stratoscale/golib/app"
+	"github.com/Stratoscale/golib/auth"
 	"github.com/Stratoscale/golib/consul"
+	"github.com/Stratoscale/golib/consulutil"
+	"github.com/Stratoscale/golib/dbutil"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -77,7 +78,7 @@ func main() {
 	h, err := restapi.Handler(restapi.Config{
 		DiskAPI:         disk,
 		Logger:          a.Log.WithField("pkg", "restapi").Debugf,
-		InnerMiddleware: middleware.Policy,
+		InnerMiddleware: auth.Middleware(a.Log.WithField("pkg", "auth")),
 	})
 	a.FailOnError(err, "initializing handler")
 

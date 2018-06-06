@@ -7,7 +7,7 @@ disk-manager-exercise:
     - /var/log/stratoscale:/var/log/stratoscale:rw,Z
     - /etc/stratoscale/:/etc/stratoscale/:ro
     - /etc/localtime:/etc/localtime:ro
-    - /proc:/hostproc
+    - /proc:/hostproc:rw,Z
   net: "host"
   environment:
     LISTEN_ADDR: :80

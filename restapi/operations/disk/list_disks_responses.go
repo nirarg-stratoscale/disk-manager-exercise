@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/Stratoscale/disk-manager-exercise/models"
+	models "github.com/Stratoscale/disk-manager-exercise/models"
 )
 
 // ListDisksOKCode is the HTTP code returned for type ListDisksOK
@@ -25,22 +25,23 @@ type ListDisksOK struct {
 	/*
 	  In: Body
 	*/
-	Payload models.ListDisksOKBody `json:"body,omitempty"`
+	Payload []*models.Disk `json:"body,omitempty"`
 }
 
 // NewListDisksOK creates ListDisksOK with default headers values
 func NewListDisksOK() *ListDisksOK {
+
 	return &ListDisksOK{}
 }
 
 // WithPayload adds the payload to the list disks o k response
-func (o *ListDisksOK) WithPayload(payload models.ListDisksOKBody) *ListDisksOK {
+func (o *ListDisksOK) WithPayload(payload []*models.Disk) *ListDisksOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the list disks o k response
-func (o *ListDisksOK) SetPayload(payload models.ListDisksOKBody) {
+func (o *ListDisksOK) SetPayload(payload []*models.Disk) {
 	o.Payload = payload
 }
 
@@ -50,7 +51,7 @@ func (o *ListDisksOK) WriteResponse(rw http.ResponseWriter, producer runtime.Pro
 	rw.WriteHeader(200)
 	payload := o.Payload
 	if payload == nil {
-		payload = make(models.ListDisksOKBody, 0, 50)
+		payload = make([]*models.Disk, 0, 50)
 	}
 
 	if err := producer.Produce(rw, payload); err != nil {
@@ -76,6 +77,7 @@ type ListDisksBadRequest struct {
 
 // NewListDisksBadRequest creates ListDisksBadRequest with default headers values
 func NewListDisksBadRequest() *ListDisksBadRequest {
+
 	return &ListDisksBadRequest{}
 }
 
@@ -118,6 +120,7 @@ type ListDisksUnauthorized struct {
 
 // NewListDisksUnauthorized creates ListDisksUnauthorized with default headers values
 func NewListDisksUnauthorized() *ListDisksUnauthorized {
+
 	return &ListDisksUnauthorized{}
 }
 
@@ -160,6 +163,7 @@ type ListDisksForbidden struct {
 
 // NewListDisksForbidden creates ListDisksForbidden with default headers values
 func NewListDisksForbidden() *ListDisksForbidden {
+
 	return &ListDisksForbidden{}
 }
 
@@ -202,6 +206,7 @@ type ListDisksInternalServerError struct {
 
 // NewListDisksInternalServerError creates ListDisksInternalServerError with default headers values
 func NewListDisksInternalServerError() *ListDisksInternalServerError {
+
 	return &ListDisksInternalServerError{}
 }
 

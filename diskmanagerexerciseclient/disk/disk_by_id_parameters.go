@@ -6,13 +6,56 @@ package disk
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
 	"time"
+
+	"golang.org/x/net/context"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
+	cr "github.com/go-openapi/runtime/client"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
+
+// NewDiskByIDParams creates a new DiskByIDParams object
+// with the default values initialized.
+func NewDiskByIDParams() *DiskByIDParams {
+	var ()
+	return &DiskByIDParams{
+
+		timeout: cr.DefaultTimeout,
+	}
+}
+
+// NewDiskByIDParamsWithTimeout creates a new DiskByIDParams object
+// with the default values initialized, and the ability to set a timeout on a request
+func NewDiskByIDParamsWithTimeout(timeout time.Duration) *DiskByIDParams {
+	var ()
+	return &DiskByIDParams{
+
+		timeout: timeout,
+	}
+}
+
+// NewDiskByIDParamsWithContext creates a new DiskByIDParams object
+// with the default values initialized, and the ability to set a context for a request
+func NewDiskByIDParamsWithContext(ctx context.Context) *DiskByIDParams {
+	var ()
+	return &DiskByIDParams{
+
+		Context: ctx,
+	}
+}
+
+// NewDiskByIDParamsWithHTTPClient creates a new DiskByIDParams object
+// with the default values initialized, and the ability to set a custom HTTPClient for a request
+func NewDiskByIDParamsWithHTTPClient(client *http.Client) *DiskByIDParams {
+	var ()
+	return &DiskByIDParams{
+		HTTPClient: client,
+	}
+}
 
 /*DiskByIDParams contains all the parameters to send to the API endpoint
 for the disk by Id operation typically these are written to a http.Request
@@ -25,13 +68,59 @@ type DiskByIDParams struct {
 	*/
 	DiskID string
 
-	Timeout time.Duration
+	timeout    time.Duration
+	Context    context.Context
+	HTTPClient *http.Client
+}
+
+// WithTimeout adds the timeout to the disk by Id params
+func (o *DiskByIDParams) WithTimeout(timeout time.Duration) *DiskByIDParams {
+	o.SetTimeout(timeout)
+	return o
+}
+
+// SetTimeout adds the timeout to the disk by Id params
+func (o *DiskByIDParams) SetTimeout(timeout time.Duration) {
+	o.timeout = timeout
+}
+
+// WithContext adds the context to the disk by Id params
+func (o *DiskByIDParams) WithContext(ctx context.Context) *DiskByIDParams {
+	o.SetContext(ctx)
+	return o
+}
+
+// SetContext adds the context to the disk by Id params
+func (o *DiskByIDParams) SetContext(ctx context.Context) {
+	o.Context = ctx
+}
+
+// WithHTTPClient adds the HTTPClient to the disk by Id params
+func (o *DiskByIDParams) WithHTTPClient(client *http.Client) *DiskByIDParams {
+	o.SetHTTPClient(client)
+	return o
+}
+
+// SetHTTPClient adds the HTTPClient to the disk by Id params
+func (o *DiskByIDParams) SetHTTPClient(client *http.Client) {
+	o.HTTPClient = client
+}
+
+// WithDiskID adds the diskID to the disk by Id params
+func (o *DiskByIDParams) WithDiskID(diskID string) *DiskByIDParams {
+	o.SetDiskID(diskID)
+	return o
+}
+
+// SetDiskID adds the diskId to the disk by Id params
+func (o *DiskByIDParams) SetDiskID(diskID string) {
+	o.DiskID = diskID
 }
 
 // WriteToRequest writes these params to a swagger request
 func (o *DiskByIDParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
-	if err := r.SetTimeout(o.Timeout); err != nil {
+	if err := r.SetTimeout(o.timeout); err != nil {
 		return err
 	}
 	var res []error

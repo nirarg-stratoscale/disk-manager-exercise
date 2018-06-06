@@ -12,7 +12,7 @@ STRATO_GO_SWAGGER = docker run --rm \
 	-v $(HOST_PWD):/go/src/github.com/Stratoscale/disk-manager-exercise \
 	-w /go/src/github.com/Stratoscale/disk-manager-exercise \
 	-u $(shell id -u):$(shell id -g) \
-	stratoscale/swagger:v1.0.9
+	stratoscale/swagger:v1.0.13
 
 # =========================================================================
 
@@ -36,7 +36,7 @@ lint:
 
 	# Run static code analysis
 	#golangci-lint run --enable goimports --enable gocyclo --tests
-	golangci-lint run --enable goimports --enable gocyclo --enable interfacer --enable unconvert -D deadcode --tests
+	golangci-lint run --enable goimports --enable gocyclo --enable interfacer --enable unconvert --tests
 
 test:
 

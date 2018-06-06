@@ -25,7 +25,7 @@ func TestListDisks(t *testing.T) {
 	tests := []struct {
 		name       string
 		arg1       string
-		want       models.ListDisksOKBody
+		want       []*models.Disk
 		pyResult   string
 		pyErr      error
 		hostResult string
@@ -35,7 +35,7 @@ func TestListDisks(t *testing.T) {
 		{
 			name: "TestListDisks-ok",
 			arg1: "Test1",
-			want: models.ListDisksOKBody{&models.Disk{ID: &id1,
+			want: []*models.Disk{&models.Disk{ID: &id1,
 				Hostname:        "host-test-1",
 				MediaType:       "SSD",
 				Model:           "SAMSUNG1 MZ7TN512",

@@ -30,6 +30,7 @@ type Disk struct {
 	ID *string `json:"id"`
 
 	// media type
+	// Enum: [SSD HDD NVMe]
 	MediaType string `json:"mediaType,omitempty"`
 
 	// model
@@ -54,17 +55,14 @@ func (m *Disk) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateMediaType(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validatePath(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
@@ -96,10 +94,13 @@ func init() {
 }
 
 const (
+
 	// DiskMediaTypeSSD captures enum value "SSD"
 	DiskMediaTypeSSD string = "SSD"
+
 	// DiskMediaTypeHDD captures enum value "HDD"
 	DiskMediaTypeHDD string = "HDD"
+
 	// DiskMediaTypeNVme captures enum value "NVMe"
 	DiskMediaTypeNVme string = "NVMe"
 )

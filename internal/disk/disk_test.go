@@ -18,8 +18,9 @@ func TestListDisks(t *testing.T) {
 	t.Parallel()
 
 	id := "1234"
+	d := models.Disk{ID: &id}
 	hostName := "Test1"
-	out := models.ListDisksOKBody{&models.Disk{ID: &id}}
+	out := []*models.Disk{&d}
 
 	tests := []struct {
 		name   string

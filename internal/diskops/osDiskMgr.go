@@ -37,13 +37,13 @@ type OsDiskMgr struct {
 	Config
 }
 
-func (o *OsDiskMgr) ListDisks(hostName *string) (models.ListDisksOKBody, error) {
+func (o *OsDiskMgr) ListDisks(hostName *string) ([]*models.Disk, error) {
 	out, err1 := o.OsOps.ExecCommand("python", "lib/pytools/storage.py")
 	if err1 != nil {
 		return nil, httputil.NewErrInternalServer("ListDisks failed to get the disks info with error %s", err1)
 	}
 
-	result := models.ListDisksOKBody{}
+	result := []*models.Disk{}
 
 	lst := ListResponse{}
 	err2 := json.Unmarshal([]byte(out), &lst)

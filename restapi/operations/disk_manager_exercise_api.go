@@ -29,6 +29,8 @@ func NewDiskManagerExerciseAPI(spec *loads.Document) *DiskManagerExerciseAPI {
 		formats:             strfmt.Default,
 		defaultConsumes:     "application/json",
 		defaultProduces:     "application/json",
+		customConsumers:     make(map[string]runtime.Consumer),
+		customProducers:     make(map[string]runtime.Producer),
 		ServerShutdown:      func() {},
 		spec:                spec,
 		ServeError:          errors.ServeError,
@@ -43,6 +45,14 @@ func NewDiskManagerExerciseAPI(spec *loads.Document) *DiskManagerExerciseAPI {
 		DiskListDisksHandler: disk.ListDisksHandlerFunc(func(params disk.ListDisksParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation DiskListDisks has not yet been implemented")
 		}),
+
+		// Applies when the "X-Auth-Roles" header is set
+		RolesAuth: func(token string) (interface{}, error) {
+			return nil, errors.NotImplemented("api key auth (roles) X-Auth-Roles from header param [X-Auth-Roles] has not yet been implemented")
+		},
+
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -52,6 +62,8 @@ type DiskManagerExerciseAPI struct {
 	context         *middleware.Context
 	handlers        map[string]map[string]http.Handler
 	formats         strfmt.Registry
+	customConsumers map[string]runtime.Consumer
+	customProducers map[string]runtime.Producer
 	defaultConsumes string
 	defaultProduces string
 	Middleware      func(middleware.Builder) http.Handler
@@ -71,6 +83,13 @@ type DiskManagerExerciseAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
+
+	// RolesAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key X-Auth-Roles provided in the header
+	RolesAuth func(string) (interface{}, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
 
 	// DiskDiskByIDHandler sets the operation handler for the disk by Id operation
 	DiskDiskByIDHandler disk.DiskByIDHandler
@@ -139,6 +158,10 @@ func (o *DiskManagerExerciseAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.RolesAuth == nil {
+		unregistered = append(unregistered, "XAuthRolesAuth")
+	}
+
 	if o.DiskDiskByIDHandler == nil {
 		unregistered = append(unregistered, "disk.DiskByIDHandler")
 	}
@@ -162,14 +185,24 @@ func (o *DiskManagerExerciseAPI) ServeErrorFor(operationID string) func(http.Res
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *DiskManagerExerciseAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name, scheme := range schemes {
+		switch name {
+
+		case "roles":
+
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.RolesAuth)
+
+		}
+	}
+	return result
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *DiskManagerExerciseAPI) Authorizer() runtime.Authorizer {
 
-	return nil
+	return o.APIAuthorizer
 
 }
 
@@ -183,6 +216,10 @@ func (o *DiskManagerExerciseAPI) ConsumersFor(mediaTypes []string) map[string]ru
 		case "application/json":
 			result["application/json"] = o.JSONConsumer
 
+		}
+
+		if c, ok := o.customConsumers[mt]; ok {
+			result[mt] = c
 		}
 	}
 	return result
@@ -199,6 +236,10 @@ func (o *DiskManagerExerciseAPI) ProducersFor(mediaTypes []string) map[string]ru
 		case "application/json":
 			result["application/json"] = o.JSONProducer
 
+		}
+
+		if p, ok := o.customProducers[mt]; ok {
+			result[mt] = p
 		}
 	}
 	return result
@@ -260,9 +301,19 @@ func (o *DiskManagerExerciseAPI) Serve(builder middleware.Builder) http.Handler 
 	return o.context.APIHandler(builder)
 }
 
-// Init allows you to just initialize the handler cache, you can then recompose the middelware as you see fit
+// Init allows you to just initialize the handler cache, you can then recompose the middleware as you see fit
 func (o *DiskManagerExerciseAPI) Init() {
 	if len(o.handlers) == 0 {
 		o.initHandlerCache()
 	}
+}
+
+// RegisterConsumer allows you to add (or override) a consumer for a media type.
+func (o *DiskManagerExerciseAPI) RegisterConsumer(mediaType string, consumer runtime.Consumer) {
+	o.customConsumers[mediaType] = consumer
+}
+
+// RegisterProducer allows you to add (or override) a producer for a media type.
+func (o *DiskManagerExerciseAPI) RegisterProducer(mediaType string, producer runtime.Producer) {
+	o.customProducers[mediaType] = producer
 }

@@ -9,8 +9,12 @@ import (
 	"encoding/json"
 )
 
-// SwaggerJSON embedded version of the swagger document used at generation time
-var SwaggerJSON json.RawMessage
+var (
+	// SwaggerJSON embedded version of the swagger document used at generation time
+	SwaggerJSON json.RawMessage
+	// FlatSwaggerJSON embedded flattened version of the swagger document used at generation time
+	FlatSwaggerJSON json.RawMessage
+)
 
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
@@ -34,19 +38,19 @@ func init() {
   "paths": {
     "/disks": {
       "get": {
+        "security": [
+          {
+            "roles": [
+              "admin",
+              "_member_"
+            ]
+          }
+        ],
         "tags": [
           "disk"
         ],
         "summary": "List physical disks",
         "operationId": "listDisks",
-        "security": [
-          {
-            "roles": [
-              "admin",
-              "member"
-            ]
-          }
-        ],
         "parameters": [
           {
             "type": "string",
@@ -94,19 +98,19 @@ func init() {
     },
     "/disks/{disk_id}": {
       "get": {
+        "security": [
+          {
+            "roles": [
+              "admin",
+              "_member_"
+            ]
+          }
+        ],
         "tags": [
           "disk"
         ],
         "summary": "Retrieve a physical disk",
         "operationId": "diskById",
-        "security": [
-          {
-            "roles": [
-              "admin",
-              "member"
-            ]
-          }
-        ],
         "parameters": [
           {
             "type": "string",
@@ -234,6 +238,258 @@ func init() {
       "pattern": "^An internal error has occurred$"
     }
   },
+  "securityDefinitions": {
+    "roles": {
+      "type": "apiKey",
+      "name": "X-Auth-Roles",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "roles": []
+    }
+  ],
+  "tags": [
+    {
+      "description": "Information about physical disks",
+      "name": "disk"
+    }
+  ]
+}`))
+	FlatSwaggerJSON = json.RawMessage([]byte(`{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a service to get physical disk information.",
+    "title": "Disk Manager Exercise",
+    "version": "1.0.0"
+  },
+  "host": "diskmanagerexercise.service.strato",
+  "basePath": "/api/v2",
+  "paths": {
+    "/disks": {
+      "get": {
+        "security": [
+          {
+            "roles": [
+              "admin",
+              "_member_"
+            ]
+          }
+        ],
+        "tags": [
+          "disk"
+        ],
+        "summary": "List physical disks",
+        "operationId": "listDisks",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The hostname of the specified node",
+            "name": "hostname",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Disk"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "schema": {
+              "$ref": "#/definitions/error400"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/error401"
+            }
+          },
+          "403": {
+            "description": "No permissions",
+            "schema": {
+              "$ref": "#/definitions/error403"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/error500"
+            }
+          }
+        }
+      }
+    },
+    "/disks/{disk_id}": {
+      "get": {
+        "security": [
+          {
+            "roles": [
+              "admin",
+              "_member_"
+            ]
+          }
+        ],
+        "tags": [
+          "disk"
+        ],
+        "summary": "Retrieve a physical disk",
+        "operationId": "diskById",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The ID of the requested disk",
+            "name": "disk_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Disk"
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "schema": {
+              "$ref": "#/definitions/error400"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/error401"
+            }
+          },
+          "403": {
+            "description": "No permissions",
+            "schema": {
+              "$ref": "#/definitions/error403"
+            }
+          },
+          "404": {
+            "description": "Unknown volume",
+            "schema": {
+              "$ref": "#/definitions/error404"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/error500"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Disk": {
+      "type": "object",
+      "required": [
+        "id",
+        "path"
+      ],
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "example": "2018-05-02T07:07:38.718575"
+        },
+        "hostname": {
+          "type": "string",
+          "x-go-custom-tag": "gorm:\"primary_key\" query:\"filter,sort\"",
+          "example": "stratonode2.node.strato"
+        },
+        "id": {
+          "type": "string",
+          "example": "23702960-b541-426e-a09f-6785f4fe76a1"
+        },
+        "mediaType": {
+          "type": "string",
+          "enum": [
+            "SSD",
+            "HDD",
+            "NVMe"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "example": "Micron_5200_MTFDDAK480TDC"
+        },
+        "path": {
+          "type": "string",
+          "example": "/dev/sda"
+        },
+        "serial": {
+          "type": "string",
+          "example": "17501B8989A8"
+        },
+        "totalCapacityMB": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2018-05-02T07:07:38.800429"
+        }
+      }
+    },
+    "error400": {
+      "description": "400 return code message",
+      "type": "string",
+      "pattern": "^Request not processed due to invalid query parameters$"
+    },
+    "error401": {
+      "description": "401 return code message",
+      "type": "string",
+      "pattern": "^Unauthorized; Access is denied due to invalid credentials$"
+    },
+    "error403": {
+      "description": "403 return code message",
+      "type": "string",
+      "pattern": "^Unauthorized; Access is denied due to lack of permissions$"
+    },
+    "error404": {
+      "description": "404 return code message",
+      "type": "string",
+      "pattern": "^The specified resource could not be found$"
+    },
+    "error500": {
+      "description": "500 return code message",
+      "type": "string",
+      "pattern": "^An internal error has occurred$"
+    }
+  },
+  "securityDefinitions": {
+    "roles": {
+      "type": "apiKey",
+      "name": "X-Auth-Roles",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "roles": []
+    }
+  ],
   "tags": [
     {
       "description": "Information about physical disks",

@@ -13,7 +13,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/Stratoscale/disk-manager-exercise/models"
+	models "github.com/Stratoscale/disk-manager-exercise/models"
 )
 
 // DiskByIDReader is a Reader for the DiskByID structure.

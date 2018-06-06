@@ -33,15 +33,15 @@ func (_m *MockDiskAPI) DiskByID(id string) (*models.Disk, error) {
 }
 
 // ListDisks provides a mock function with given fields: hostName
-func (_m *MockDiskAPI) ListDisks(hostName *string) (models.ListDisksOKBody, error) {
+func (_m *MockDiskAPI) ListDisks(hostName *string) ([]*models.Disk, error) {
 	ret := _m.Called(hostName)
 
-	var r0 models.ListDisksOKBody
-	if rf, ok := ret.Get(0).(func(*string) models.ListDisksOKBody); ok {
+	var r0 []*models.Disk
+	if rf, ok := ret.Get(0).(func(*string) []*models.Disk); ok {
 		r0 = rf(hostName)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(models.ListDisksOKBody)
+			r0 = ret.Get(0).([]*models.Disk)
 		}
 	}
 
