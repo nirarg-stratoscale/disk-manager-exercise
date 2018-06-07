@@ -14,6 +14,12 @@ services:
     healthcheck:
       test: curl -f http://localhost:80/health
       interval: 1s
+    volumes:
+      - /var/log/stratoscale:/var/log/stratoscale:rw,Z
+      - /etc/stratoscale/:/etc/stratoscale/:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ${HOST_PWD}/lib/pytools/mock:/lib/pytools:rw,Z
+      - /etc/hostname:/etc/hostname:rw,Z
     environment:
       LISTEN_ADDR: :80
       PPROF_ADDR: :81
@@ -34,6 +40,7 @@ services:
      - mysql
      - consul
      - events-agent
+    privileged: true
 
   mysql:
     image: mariadb:10.1.26

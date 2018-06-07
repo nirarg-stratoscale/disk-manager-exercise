@@ -37,7 +37,8 @@ image: build
 lint:
 
 	# Run static code analysis
-	golangci-lint run --enable goimports --enable gocyclo --tests
+	#golangci-lint run --enable goimports --enable gocyclo --tests
+	golangci-lint run --enable goimports --enable gocyclo --enable interfacer --enable unconvert --tests
 
 test:
 
