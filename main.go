@@ -10,7 +10,11 @@ import (
 	"github.com/Stratoscale/golib/dbutil"
 	"github.com/kelseyhightower/envconfig"
 
+	"fmt"
+
 	"github.com/Stratoscale/disk-manager-exercise/internal/disk"
+	"github.com/Stratoscale/disk-manager-exercise/internal/diskops"
+	"github.com/Stratoscale/disk-manager-exercise/internal/osops"
 	"github.com/Stratoscale/golib/auth"
 )
 
@@ -24,7 +28,7 @@ func init() {
 	flag.Usage = func() {
 		err := envconfig.Usage("", &options)
 		if err != nil {
-			panic("Usage environment variables")
+			panic(fmt.Sprintf("Usage error %s", err))
 		}
 	}
 	flag.Parse()
@@ -57,9 +61,16 @@ func main() {
 	a.FailOnError(err, "initializing database")
 	defer db.Close()
 
+	osOps := osops.New(osops.Config{Log: a.Log.WithField("pkg", "osops")})
+	diskAPI := diskops.NewOsDiskMgr(diskops.Config{
+		Log:   a.Log.WithField("pkg", "diskops"),
+		OsOps: osOps,
+	})
+
 	disk := disk.New(disk.Config{
-		DB:  db,
-		Log: a.Log.WithField("pkg", "disk"),
+		DB:      db,
+		Log:     a.Log.WithField("pkg", "disk"),
+		DiskAPI: diskAPI,
 	})
 
 	err = disk.AutoMigrate()
