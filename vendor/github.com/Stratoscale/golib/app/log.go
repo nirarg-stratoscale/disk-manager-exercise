@@ -4,25 +4,23 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"time"
-
 	"path/filepath"
 
 	"github.com/Gurpartap/logrus-stack"
 	"github.com/sirupsen/logrus"
 )
 
-const timestampFormat = time.RFC3339
+const timestampFormat = "2006/01/02-15:04:05.999"
 
 type LogConfig struct {
 	// LogLevel represents application logging level.
-	Level level `envconfig:"LOG_LEVEL" default:"INFO"`
+	Level level `envconfig:"LEVEL" default:"INFO"`
 	// LogHumanReadable indicates if logger should use coloured output
 	// in logfmt format instead of default JSON.
-	Human bool `envconfig:"LOG_HUMAN" default:"false"`
+	Human bool `envconfig:"HUMAN" default:"false"`
 	// LogFile is os path to file where logs are printed. If empty logs
 	// will are printed to standard output.
-	File string `envconfig:"LOG_FILE"`
+	File string `envconfig:"FILE"`
 }
 
 type level struct {

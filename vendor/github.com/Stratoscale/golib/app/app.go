@@ -8,23 +8,25 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
 
 // Config is application configuration
 type Config struct {
-	ListenAddr string `envconfig:"LISTEN_ADDR" default:":80"`
-	PProf      PProfConfig
-	Log        LogConfig
+	ListenAddr    string        `envconfig:"LISTEN_ADDR" default:":80"`
+	PProf         PProfConfig   `envconfig:"PPROF"`
+	Log           LogConfig     `envconfig:"LOG"`
+	ShutDownGrace time.Duration `envconfig:"SHUT_DOWN_GRACE" default:"1m"`
 }
 
 type PProfConfig struct {
 	// Enabled indicates if profiling data should be enabled.
-	Enabled bool `envconfig:"PPROF_ENABLED"`
+	Enabled bool `envconfig:"ENABLED"`
 	// Addr is the address that pprof will listen on
-	Addr   string `envconfig:"PPROF_ADDR" default:"0.0.0.0:6060"`
-	Prefix string `envconfig:"PPROF_PREFIX" default:"/debug/pprof/"`
+	Addr   string `envconfig:"ADDR" default:"0.0.0.0:6060"`
+	Prefix string `envconfig:"PREFIX" default:"/debug/pprof/"`
 }
 
 // App is a building block for microservice applications.
@@ -67,16 +69,19 @@ func (a *App) RunHTTP(h http.Handler) {
 		ErrorLog: log.New(a.Log.Writer(), "", 0),
 	}
 
-	a.Log.Info("Starting HTTP")
-
 	go func() {
+		a.Log.Info("Starting HTTP")
 		err := server.ListenAndServe()
+		a.Log.WithError(err).Info("HTTP server stopped")
 		if err != nil && err != http.ErrServerClosed {
 			a.Log.WithError(err).Fatal("HTTP server failed to start")
 		}
 	}()
-
-	go server.Shutdown(a.ctx)
+	go func() {
+		<-a.ctx.Done()
+		sdCtx, _ := context.WithTimeout(context.Background(), a.Config.ShutDownGrace)
+		server.Shutdown(sdCtx)
+	}()
 }
 
 func (a *App) withHealthCheck(next http.Handler) http.Handler {
@@ -104,7 +109,7 @@ func (a *App) runDebugTools() {
 
 	go func() {
 		err := server.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
+		if err != nil {
 			a.FailOnError(err, "HTTP server failed to start")
 		}
 	}()

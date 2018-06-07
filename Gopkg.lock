@@ -23,30 +23,28 @@
   branch = "master"
   name = "github.com/Stratoscale/go-template"
   packages = [
-    "golib/app",
-    "golib/consulutil",
-    "golib/dbutil",
     "golib/middleware",
     "golib/testutil"
   ]
   revision = "98343787d1955ed1a494cffcf195ff1edea32df1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/Stratoscale/golib"
   packages = [
+    "app",
+    "auth",
     "consul",
     "consul/consulutil",
+    "consulutil",
+    "dbutil",
     "httputil"
   ]
-  revision = "bc89a6f52847f54c25c33142191d5808beae2bbd"
+  revision = "8c07e444fc029fc0072f080a0650f8cef37be061"
+  version = "v1.0.10"
 
 [[projects]]
   name = "github.com/Stratoscale/swagger"
-  packages = [
-    "auth",
-    "query"
-  ]
+  packages = ["query"]
   revision = "726d6b5646ae99ce823965027e2e48f010e20ac2"
   version = "v1.0.7"
 
@@ -328,6 +326,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "82012ddb7456656d00f2d8e9dece333a3ce177858665ee4d82c9f85cdeb9b1d2"
+  inputs-digest = "b7a02c65482733af2b267f25f67a7f5b700078c7998f076184ecbff1662dbd6e"
   solver-name = "gps-cdcl"
   solver-version = 1

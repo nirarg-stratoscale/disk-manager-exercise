@@ -14,12 +14,16 @@ type Config struct {
 	//RootConnString and Name are to be used by Credentialer
 	RootConnString string `envconfig:"DB_ROOT_CONN_STRING"`
 	Name           string `envconfig:"DB_NAME"`
+	ParseTime      bool   `envconfig:"DB_PARSE_TIME"`
 
 	Debug bool `envconfig:"DEBUG"`
 }
 
 // Open opens a new configured DB connection
 func Open(cfg Config, logger logrus.FieldLogger) (*gorm.DB, error) {
+	if cfg.ParseTime {
+		cfg.ConnString += "?parseTime=true"
+	}
 	db, err := gorm.Open("mysql", cfg.ConnString)
 	if err != nil {
 		return nil, err

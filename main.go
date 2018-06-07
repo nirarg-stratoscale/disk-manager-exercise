@@ -4,24 +4,29 @@ import (
 	"flag"
 
 	"github.com/Stratoscale/disk-manager-exercise/restapi"
-	"github.com/Stratoscale/go-template/golib/dbutil"
-	"github.com/Stratoscale/go-template/golib/app"
-	"github.com/Stratoscale/go-template/golib/consulutil"
-	"github.com/Stratoscale/go-template/golib/middleware"
+	"github.com/Stratoscale/golib/app"
 	"github.com/Stratoscale/golib/consul"
+	"github.com/Stratoscale/golib/consulutil"
+	"github.com/Stratoscale/golib/dbutil"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/Stratoscale/disk-manager-exercise/internal/disk"
-	)
+	"github.com/Stratoscale/golib/auth"
+)
 
 var options struct {
-	App app.Config
-DB dbutil.Config
+	App    app.Config
+	DB     dbutil.Config
 	Consul consulutil.Config
 }
 
 func init() {
-	flag.Usage = func() { envconfig.Usage("", &options) }
+	flag.Usage = func() {
+		err := envconfig.Usage("", &options)
+		if err != nil {
+			panic("Usage environment variables")
+		}
+	}
 	flag.Parse()
 }
 
@@ -40,9 +45,9 @@ func main() {
 	a.FailOnError(err, "initialize consul client")
 
 	credentialer := dbutil.Credentialer{
-		KV: consulClient.KV(),
+		KV:     consulClient.KV(),
 		Locker: consul.NewLocker(consulClient),
-		Log: a.Log.WithField("pkg", "credentials"),
+		Log:    a.Log.WithField("pkg", "credentials"),
 	}
 
 	err = credentialer.ConnectionString(&options.DB)
@@ -51,7 +56,6 @@ func main() {
 	db, err := dbutil.Open(options.DB, a.Log.WithField("pkg", "db"))
 	a.FailOnError(err, "initializing database")
 	defer db.Close()
-	
 
 	disk := disk.New(disk.Config{
 		DB:  db,
@@ -60,13 +64,11 @@ func main() {
 
 	err = disk.AutoMigrate()
 	a.FailOnError(err, "migrating disk database")
-	
-	
 
 	h, err := restapi.Handler(restapi.Config{
-		DiskAPI: disk,
-		Logger:         a.Log.WithField("pkg", "restapi").Debugf,
-		AuthMiddleware: middleware.Policy,
+		DiskAPI:         disk,
+		Logger:          a.Log.WithField("pkg", "restapi").Debugf,
+		InnerMiddleware: auth.Middleware(a.Log.WithField("pkg", "auth")),
 	})
 	a.FailOnError(err, "initializing handler")
 

@@ -1,29 +1,18 @@
-
-package main
+package main_test
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+
+	"github.com/Stratoscale/disk-manager-exercise/restapi"
 	"github.com/Stratoscale/go-template/golib/middleware"
 	"github.com/Stratoscale/go-template/golib/testutil"
-
-	"github.com/Stratoscale/disk-manager-exercise/models"
-	"github.com/Stratoscale/disk-manager-exercise/restapi"
-"github.com/Stratoscale/disk-manager-exercise/restapi/operations/disk"
-
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var log = testutil.Log()
-
-const (
-	target = "http://diskmanagerexercise.service.strato:80/api/v2"
-)
 
 func TestHTTPHandler(t *testing.T) {
 	t.Parallel()
@@ -38,13 +27,12 @@ func TestHTTPHandler(t *testing.T) {
 		role string
 
 		// prepare prepares the mock objects before performing the tested function
-		prepare func(*testing.T, *restapi.MockDiskAPI, )
+		prepare func(*testing.T, *restapi.MockDiskAPI)
 
 		// a set of results that we expect
 		wantCode int
-		wantBody  []byte
-	}{
-		}
+		wantBody []byte
+	}{}
 
 	for _, tt := range tests {
 		tt := tt
@@ -54,19 +42,19 @@ func TestHTTPHandler(t *testing.T) {
 			// create all mocks and variables for the test
 			var (
 				diskMock restapi.MockDiskAPI
-				resp = httptest.NewRecorder()
+				resp     = httptest.NewRecorder()
 			)
 
 			h, err := restapi.Handler(restapi.Config{
-				DiskAPI: &diskMock,
-			AuthMiddleware: middleware.Policy,
-				Logger:         log.Debugf,
+				DiskAPI:         &diskMock,
+				InnerMiddleware: middleware.Policy,
+				Logger:          log.Debugf,
 			})
 			require.Nil(t, err)
 
 			// prepare mocks
 			if tt.prepare != nil {
-				tt.prepare(t, &diskMock, )
+				tt.prepare(t, &diskMock)
 			}
 
 			// prepare the request for sending
@@ -85,6 +73,6 @@ func TestHTTPHandler(t *testing.T) {
 			}
 
 			diskMock.AssertExpectations(t)
-			})
+		})
 	}
 }
