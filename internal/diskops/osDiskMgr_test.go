@@ -86,7 +86,7 @@ func TestListDisks(t *testing.T) {
 				p = NewOsDiskMgr(Config{Log: log, OsOps: osOpsMock})
 			)
 			osOpsMock.On("ExecCommand", "python", "lib/pytools/storage.py").Return(tt.pyResult, tt.pyErr)
-			osOpsMock.On("Hostname").Return(tt.hostResult, tt.hostErr)
+			osOpsMock.On("ExecCommand", "cat", "/etc/hostname").Return(tt.hostResult, tt.hostErr)
 
 			got, err := p.ListDisks(&tt.arg1)
 
@@ -180,7 +180,7 @@ func TestDiskByID(t *testing.T) {
 				p = NewOsDiskMgr(Config{Log: log, OsOps: osOpsMock})
 			)
 			osOpsMock.On("ExecCommand", "python", "lib/pytools/storage.py").Return(tt.pyResult, tt.pyErr)
-			osOpsMock.On("Hostname").Return(tt.hostResult, tt.hostErr)
+			osOpsMock.On("ExecCommand", "cat", "/etc/hostname").Return(tt.hostResult, tt.hostErr)
 
 			got, err := p.DiskByID(tt.arg1)
 
