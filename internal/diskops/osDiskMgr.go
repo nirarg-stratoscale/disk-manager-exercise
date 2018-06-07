@@ -50,7 +50,7 @@ func (o *OsDiskMgr) ListDisks(hostName *string) ([]*models.Disk, error) {
 	if err2 != nil {
 		return nil, httputil.NewErrInternalServer("ListDisks failed to unmarshal os json response with error %s", err2)
 	}
-	hostname, err3 := o.OsOps.Hostname()
+	hostname, err3 := o.OsOps.ExecCommand("cat", "/etc/hostname")
 	if err3 != nil {
 		return nil, httputil.NewErrInternalServer("ListDisks failed to get the hostname with error %s", err3)
 	}
