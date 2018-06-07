@@ -6,13 +6,56 @@ package disk
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
 	"time"
+
+	"golang.org/x/net/context"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
+	cr "github.com/go-openapi/runtime/client"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
+
+// NewListDisksParams creates a new ListDisksParams object
+// with the default values initialized.
+func NewListDisksParams() *ListDisksParams {
+	var ()
+	return &ListDisksParams{
+
+		timeout: cr.DefaultTimeout,
+	}
+}
+
+// NewListDisksParamsWithTimeout creates a new ListDisksParams object
+// with the default values initialized, and the ability to set a timeout on a request
+func NewListDisksParamsWithTimeout(timeout time.Duration) *ListDisksParams {
+	var ()
+	return &ListDisksParams{
+
+		timeout: timeout,
+	}
+}
+
+// NewListDisksParamsWithContext creates a new ListDisksParams object
+// with the default values initialized, and the ability to set a context for a request
+func NewListDisksParamsWithContext(ctx context.Context) *ListDisksParams {
+	var ()
+	return &ListDisksParams{
+
+		Context: ctx,
+	}
+}
+
+// NewListDisksParamsWithHTTPClient creates a new ListDisksParams object
+// with the default values initialized, and the ability to set a custom HTTPClient for a request
+func NewListDisksParamsWithHTTPClient(client *http.Client) *ListDisksParams {
+	var ()
+	return &ListDisksParams{
+		HTTPClient: client,
+	}
+}
 
 /*ListDisksParams contains all the parameters to send to the API endpoint
 for the list disks operation typically these are written to a http.Request
@@ -25,13 +68,59 @@ type ListDisksParams struct {
 	*/
 	Hostname *string
 
-	Timeout time.Duration
+	timeout    time.Duration
+	Context    context.Context
+	HTTPClient *http.Client
+}
+
+// WithTimeout adds the timeout to the list disks params
+func (o *ListDisksParams) WithTimeout(timeout time.Duration) *ListDisksParams {
+	o.SetTimeout(timeout)
+	return o
+}
+
+// SetTimeout adds the timeout to the list disks params
+func (o *ListDisksParams) SetTimeout(timeout time.Duration) {
+	o.timeout = timeout
+}
+
+// WithContext adds the context to the list disks params
+func (o *ListDisksParams) WithContext(ctx context.Context) *ListDisksParams {
+	o.SetContext(ctx)
+	return o
+}
+
+// SetContext adds the context to the list disks params
+func (o *ListDisksParams) SetContext(ctx context.Context) {
+	o.Context = ctx
+}
+
+// WithHTTPClient adds the HTTPClient to the list disks params
+func (o *ListDisksParams) WithHTTPClient(client *http.Client) *ListDisksParams {
+	o.SetHTTPClient(client)
+	return o
+}
+
+// SetHTTPClient adds the HTTPClient to the list disks params
+func (o *ListDisksParams) SetHTTPClient(client *http.Client) {
+	o.HTTPClient = client
+}
+
+// WithHostname adds the hostname to the list disks params
+func (o *ListDisksParams) WithHostname(hostname *string) *ListDisksParams {
+	o.SetHostname(hostname)
+	return o
+}
+
+// SetHostname adds the hostname to the list disks params
+func (o *ListDisksParams) SetHostname(hostname *string) {
+	o.Hostname = hostname
 }
 
 // WriteToRequest writes these params to a swagger request
 func (o *ListDisksParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
-	if err := r.SetTimeout(o.Timeout); err != nil {
+	if err := r.SetTimeout(o.timeout); err != nil {
 		return err
 	}
 	var res []error

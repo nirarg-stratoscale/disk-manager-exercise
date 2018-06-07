@@ -3,4 +3,3 @@ vendor/*
 
 # Exclude some build directories
 build/subsystem/*
-build/disk-manager-exercise-client/*

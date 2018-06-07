@@ -15,6 +15,15 @@ consumes:
 produces:
   - application/json
 
+securityDefinitions:
+  roles:
+    type: apiKey
+    in: header
+    name: X-Auth-Roles
+
+security:
+  - roles: []
+
 paths:
   /disks:
     get:
@@ -36,11 +45,26 @@ paths:
             items:
               $ref: '#/definitions/Disk'
         '400':
-          description: Invalid filter
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/error400'
+        '401':
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/error401'
+        '403':
+          description: No permissions
+          schema:
+            $ref: '#/definitions/error403'
+        '500':
+          description: Internal Error
+          schema:
+            $ref: '#/definitions/error500'
       security:
         - roles:
-            - admin
-            - member
+          - admin
+          - _member_
+
   /disks/{disk_id}:
       get:
         tags:
@@ -59,13 +83,29 @@ paths:
             schema:
               $ref: '#/definitions/Disk'
           '400':
-            description: Invalid disk ID
+            description: Invalid parameters
+            schema:
+              $ref: '#/definitions/error400'
+          '401':
+            description: Invalid credentials
+            schema:
+              $ref: '#/definitions/error401'
+          '403':
+            description: No permissions
+            schema:
+              $ref: '#/definitions/error403'
           '404':
-            description: Disk not found
+            description: Unknown volume
+            schema:
+              $ref: '#/definitions/error404'
+          '500':
+            description: Internal Error
+            schema:
+              $ref: '#/definitions/error500'
         security:
           - roles:
-              - admin
-              - member
+            - admin
+            - _member_
 
 definitions:
   Disk:
@@ -75,8 +115,8 @@ definitions:
       - path
     properties:
       id:
-        type: integer
-        format: int64
+        type: string
+        example: '23702960-b541-426e-a09f-6785f4fe76a1'
       path:
         type: string
         example: '/dev/sda'
@@ -89,9 +129,6 @@ definitions:
       model:
         type: string
         example: 'Micron_5200_MTFDDAK480TDC'
-      freeCapacityMB:
-        type: integer
-        format: int64
       totalCapacityMB:
         type: integer
         format: int64
@@ -105,3 +142,28 @@ definitions:
         type: string
         example: 'stratonode2.node.strato'
         x-go-custom-tag: gorm:"primary_key" query:"filter,sort"
+
+  error400:
+    type: string
+    pattern: ^Request not processed due to invalid query parameters$
+    description: 400 return code message
+
+  error401:
+    type: string
+    pattern: ^Unauthorized; Access is denied due to invalid credentials$
+    description: 401 return code message
+
+  error403:
+    type: string
+    pattern: ^Unauthorized; Access is denied due to lack of permissions$
+    description: 403 return code message
+
+  error404:
+    type: string
+    pattern: ^The specified resource could not be found$
+    description: 404 return code message
+
+  error500:
+    type: string
+    pattern: ^An internal error has occurred$
+    description: 500 return code message

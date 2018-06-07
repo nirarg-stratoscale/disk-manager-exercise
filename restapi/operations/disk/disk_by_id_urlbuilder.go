@@ -48,6 +48,7 @@ func (o *DiskByIDURL) Build() (*url.URL, error) {
 	} else {
 		return nil, errors.New("DiskID is required on DiskByIDURL")
 	}
+
 	_basePath := o._basePath
 	if _basePath == "" {
 		_basePath = "/api/v2"
