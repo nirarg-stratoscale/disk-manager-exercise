@@ -25,33 +25,36 @@ all: lint test subsystem rpm
 build: build/disk-manager-exercise build/disk-manager-exercise-client/dist/disk-manager-exercise-client-*.tar.gz
 
 build/disk-manager-exercise: $(GO_SOURCE_FILES)
-
 	# Build service binary
 	CGO_ENABLED=0 GOOS=linux go build -o $@ ./main.go
 
 image: build
-
 	# Build service image
 	skipper build $(name)
 
 lint:
-
 	# Run static code analysis
 	#golangci-lint run --enable goimports --enable gocyclo --tests
 	golangci-lint run --enable goimports --enable gocyclo --enable interfacer --enable unconvert --tests
 
-test:
-
+test: flake8 pylint pytest
 	# Run go unit tests
 	go test -race ./...
 
-format:
+flake8:
+	python -m flake8 --config=setup.cfg lib/pytools --exclude=test_*
 
+pylint:
+	PYLINTHOME=$(PYLINTHOME) pylint -r n lib/pytools --disable=missing-docstring --max-line-length=145
+
+pytest:
+	nose2 --start-dir lib/
+
+format:
 	# Auto format go code
 	goimports -w $(shell find -maxdepth 1 -name "*.go" -or -type d -not -name vendor -not -name .)
 
 check_docker_version:
-
 	# Ensure docker version is recent enough
 	if [ $(DOCKER_VERSION) -lt $(MIN_DOCKER_VERSION) ] ; then \
 		echo "Docker version must be at least $(MIN_DOCKER_VERSION)"; \
@@ -61,7 +64,6 @@ check_docker_version:
 generate-by-swagger: check_docker_version generate-server generate-client go-generate
 
 generate-server:
-
 	# Cleanup old generated code
 	-find models restapi -nowarn -name "*.go" -not -name "_mock.go" -delete
 
@@ -69,25 +71,20 @@ generate-server:
 	$(STRATO_GO_SWAGGER) generate server
 
 generate-client:
-
 	# Cleanup old generated code
 	-find diskmanagerexerciseclient -nowarn -name "*.go" -not -name "_mock.go" -delete
-
 	# Generate server code based on swagger file
 	$(STRATO_GO_SWAGGER) generate client --client-package diskmanagerexerciseclient
 
 go-generate:
-
 	# Generate code based on annotations (e.g mocks)
 	go generate ./...
 
 clean:
-
 	# Cleanup artifacts
 	rm -rf build
 
 dep-ensure:
-
 	# Ensure a dependency is safely vendored in the project
 	dep ensure
 
@@ -95,10 +92,8 @@ rpm: $(shell find deploy -type f)
 	rpmbuild -bb -vv --define "_srcdir $(HOST_PWD)" --define "_topdir $(RPM_BUILD_ROOT)" deploy/install.spec
 
 build/disk-manager-exercise-client/dist/disk-manager-exercise-client-*.tar.gz: swagger.yaml
-
 	# Generate python client package based on the swagger file
 	mkdir -p build
-
 	# Use swagger-codegen container to generate python client code
 	@echo '{"packageName" : "disk_manager_exercise_client", "packageVersion": "$(VERSION)"}' > build/code-gen-config.json
 	docker run --rm \
@@ -111,12 +106,10 @@ build/disk-manager-exercise-client/dist/disk-manager-exercise-client-*.tar.gz: s
         --config /config.json \
         --output ./disk-manager-exercise-client/ \
         --input-spec /swagger.yaml
-
 	# Create the client source distribution
 	cd build/disk-manager-exercise-client/ && python setup.py sdist
 
 subsystem: image
-
 	# Cleanup old subsystem logs
 	rm -rf subsystem/logs && mkdir -p subsystem/logs
 

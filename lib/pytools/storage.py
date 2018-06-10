@@ -10,7 +10,7 @@ HOST_PROC_DIR = "hostproc"
 MOUNT_COMMAND = "--mount=/" + HOST_PROC_DIR + "/1/ns/mnt"
 
 
-def get_storage_list():
+def get_disks_list():
     os_output = _get_devices_storage()
     result_json_data = _from_os_output_to_internal_json(os_output)
     # os_json_data = json.loads(os_list)
@@ -21,10 +21,7 @@ def get_storage_list():
 def _check_output_log_if_needed(*args, **kwargs):  # EXEMPT_FROM_CODE_COVERAGE
     command = kwargs["args"] if "args" in kwargs else args[0]
     _LOGGER.info(str(command))
-    output = subprocess.check_output(*args,
-                                     stderr=subprocess.STDOUT,
-                                     close_fds=True,
-                                     **kwargs)
+    output = subprocess.check_output(*args, stderr=subprocess.STDOUT, close_fds=True, **kwargs)
     _LOGGER.debug("Command '%(command)s' finished successfully. Output was:\n%(output)s",
                   dict(command=command, output=output))
     return output
@@ -76,4 +73,4 @@ def _from_os_output_to_internal_json(os_output):
 
 
 if __name__ == '__main__':  # EXEMPT_FROM_CODE_COVERAGE
-    print(json.dumps(get_storage_list(), ensure_ascii=False))
+    print(json.dumps(get_disks_list(), ensure_ascii=False))
